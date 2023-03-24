@@ -1,12 +1,17 @@
-
-from atomate2.openmm.jobs.core import InputMaker, EnergyMinimizationMaker, NPTMaker, AnnealMaker, NVTMaker
-from typing import List, Union, Optional
+from src.atomate2.openmm.jobs.core import (
+    InputMaker,
+    EnergyMinimizationMaker,
+    NPTMaker,
+    AnnealMaker,
+    NVTMaker,
+)
+from typing import List, Union, Optional, Dict
 from pathlib import Path
 
 from dataclasses import dataclass
 
 from pydantic import Field
-from jobflow import Maker, Flow
+from jobflow import Maker, Flow, job
 
 from pymatgen.io.openmm.schema import InputMoleculeSpec
 
@@ -31,7 +36,7 @@ class ProductionMaker(Maker):
         input_mol_dicts: List[Union[Dict, InputMoleculeSpec]],
         density: Optional[float] = None,
         box: Optional[List[float]] = None,
-        prev_dir: str | Path | None = None
+        prev_dir: Optional[Union[str, Path]] = None
     ):
         input_job = self.input_maker.make(input_mol_dicts=input_mol_dicts)
 

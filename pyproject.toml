@@ -34,7 +34,10 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies =[
     "atomate2",
-    "git@github.com:orionarcher/pymatgen-io-openmm.git",
+    "pymatgen-io-openmm @ git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git",
+    "pydantic",
+    "jobflow",
+    "pymatgen",
 ]
 
 [project.optional-dependencies]

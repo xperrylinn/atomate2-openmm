@@ -1,10 +1,10 @@
-
-from typing import Callable
+from typing import Optional, Union, Callable
 from jobflow import job, Maker
 from dataclasses import dataclass
 from pathlib import Path
 from pymatgen.io.openmm.sets import OpenMMSet
-from atomate2.openmm.schemas.task import OpenMMTaskDocument
+from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+
 
 def openmm_job(method: Callable):
     """
@@ -12,7 +12,7 @@ def openmm_job(method: Callable):
     Parameters
     ----------
     method : callable
-        A BaseVaspMaker.make method. This should not be specified directly and is
+        A BaseOpenmmMaker.make method. This should not be specified directly and is
         implied by the decorator.
 
     Returns
@@ -25,17 +25,18 @@ def openmm_job(method: Callable):
 
 @dataclass
 class BaseOpenmmMaker(Maker):
+
     @openmm_job
-    def make(self, input_set: OpenMMSet, prev_dir: str | Path | None = None):
+    def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
         """
         Run an Openmm calculation.
 
         Parameters
         ----------
         input_set : OpenMMSet
-            A pymatgen structure object.
+            pymatgen.io.openmm OpenMMSet object instance.
         prev_dir : str or Path or None
-            A previous OpenMM calculation directory to copy output files from.
+            Previous OpenMM calculation directory to copy output files from.
         """
 
         # this should mirror the structure of BaseVaspMaker.make
