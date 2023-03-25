@@ -50,7 +50,7 @@ class ProductionMaker(Maker):
 
         my_flow = Flow(
             [input_job, energy_job, pressure_job, anneal_job, production_job],
-            output={"log": production_job.log},
+            output={"log": production_job},
         )
 
         return my_flow

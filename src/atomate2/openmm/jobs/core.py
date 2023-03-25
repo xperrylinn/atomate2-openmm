@@ -106,6 +106,7 @@ class NPTMaker(BaseOpenmmMaker):
     pressure: float = 1
     frequency: int = 10
 
+    @job
     def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
         """
         Equilibrate the pressure of a simulation in the NPT ensemble.
@@ -151,11 +152,12 @@ class NPTMaker(BaseOpenmmMaker):
 @dataclass
 class NVTMaker(BaseOpenmmMaker):
     steps: int = 1000000
-    name: str = "npt simulation"
+    name: str = "nvt simulation"
     temperature: float = 298
     pressure: float = 1
     frequency: int = 10
 
+    @job
     def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
         """
         Equilibrate the temperature of a simulation in the NPT ensemble.
@@ -201,10 +203,11 @@ class NVTMaker(BaseOpenmmMaker):
 class AnnealMaker(BaseOpenmmMaker):
 
     steps: Tuple[int, int, int] = (500000, 1000000, 500000)
-    name: str = "npt simulation"
+    name: str = "anneal simulation"
     temperatures: Tuple[int, int, int] = (298, 400, 298)
     temp_steps: int = 100
 
+    @job
     def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
         """
         Anneal the simulation at the specified temperature.

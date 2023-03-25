@@ -6,13 +6,19 @@ from src.atomate2.openmm.jobs.core import (
     AnnealMaker,
     NVTMaker,
 )
+
 from pymatgen.io.openmm.schema import InputMoleculeSpec
+
+from maggma.stores import MemoryStore
+
+from jobflow.managers.local import run_locally
+from jobflow import JobStore
 
 
 input_molecules = list()
 num_water_molecules, num_ethanol_molecules = 400, 20
-ethanol_molecs = InputMoleculeSpec(name="ethanol", smile="O", count=num_ethanol_molecules)
-water_molecs = InputMoleculeSpec(name="ethanol", smile="O", count=num_ethanol_molecules)
+ethanol_molecs = InputMoleculeSpec(name="ethanol", smile="CCO", count=num_ethanol_molecules)
+water_molecs = InputMoleculeSpec(name="water", smile="O", count=num_ethanol_molecules)
 input_molecules.append(ethanol_molecs)
 input_molecules.append(water_molecs)
 
@@ -45,3 +51,9 @@ flow = production_maker.make(
 )
 
 flow.draw_graph().show()
+
+docs_store = MemoryStore()
+
+store = JobStore(docs_store)
+
+responses = run_locally(flow, store=store)
