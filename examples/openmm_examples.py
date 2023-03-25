@@ -24,11 +24,11 @@ assert len(target_paths) == 1, "there must be exactly 1 job to run"
 
 target_path = target_paths[0]
 input_set = OpenMMSet.from_directory(target_path)
-platform = Platform.getPlatformByName("OpenCL")
-sim = input_set.get_simulation(
-    platform=platform,
-    platformProperties={"DeviceIndex": str(0)},
-)
+print("OpenMMSet created")
+
+platform = Platform.getPlatformByName("CPU")
+sim = input_set.get_simulation()
+print("OpenMM simulation created")
 
 output_dir = output_dir / target_path.stem
 output_dir.mkdir(parents=True, exist_ok=True)
@@ -37,7 +37,7 @@ pdb_reporter.report(sim, sim.context.getState(getPositions=True))
 sim.reporters.append(
     StateDataReporter(
         str(output_dir / "state.txt"),
-        1000,
+        10,
         step=True,
         potentialEnergy=True,
         temperature=True,
@@ -45,16 +45,25 @@ sim.reporters.append(
         density=True,
     )
 )
-sim.reporters.append(DCDReporter(str(output_dir / "trajectory_equil.dcd"), 10000))
+sim.reporters.append(DCDReporter(str(output_dir / "trajectory_equil.dcd"), 10))
+print("StateDataReporter addedto simulation reporters")
 
 start = time.time()
 
 sim.minimizeEnergy()
-equilibrate_pressure(sim, 1000000)
-anneal(sim, 400, [1000000, 1000000, 1000000])
-sim.reporters.pop()
-sim.reporters.append(DCDReporter(str(output_dir / "trajectory.dcd"), 10000))
+print("Simulation particle coordinates energy minimized")
 
-sim.step(5000000)
+equilibrate_pressure(sim, 100)
+print("Simulation pressure equilibrated")
+
+anneal(sim, 400, [100, 100, 100])
+print("Simulation annealed")
+
+sim.reporters.pop()
+sim.reporters.append(DCDReporter(str(output_dir / "trajectory.dcd"), 10))
+print("Simulation DCDReporter added")
+
+sim.step(5000)
+print("Simulation step")
 
 print("total runtime: ", time.time() - start)
