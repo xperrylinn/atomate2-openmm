@@ -1,5 +1,5 @@
 from src.atomate2.openmm.jobs.core import (
-    InputMaker,
+    OpenMMSetFromInputMoleculeSpec,
     EnergyMinimizationMaker,
     NPTMaker,
     AnnealMaker,
@@ -25,7 +25,7 @@ class ProductionMaker(Maker):
     """
     name: str = "production"
 
-    input_maker: InputMaker = Field(default_factory=InputMaker)
+    input_maker: OpenMMSetFromInputMoleculeSpec = Field(default_factory=OpenMMSetFromInputMoleculeSpec)
     energy_maker: EnergyMinimizationMaker = Field(default_factory=EnergyMinimizationMaker)
     npt_maker: NPTMaker = Field(default_factory=NPTMaker)
     anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker)
@@ -38,7 +38,12 @@ class ProductionMaker(Maker):
         box: Optional[List[float]] = None,
         prev_dir: Optional[Union[str, Path]] = None
     ):
-        input_job = self.input_maker.make(input_mol_dicts=input_mol_dicts, density=density, box=box)
+        input_job = self.input_maker.make(
+            input_mol_dicts=input_mol_dicts,
+            density=density,
+            box=box,
+            default_charge_method="mmff94"
+        )
 
         energy_job = self.energy_maker.make(input_set=input_job.output.input_set)
 

@@ -1,6 +1,6 @@
 from src.atomate2.openmm.flows.core import ProductionMaker
 from src.atomate2.openmm.jobs.core import (
-    InputMaker,
+    OpenMMSetFromInputMoleculeSpec,
     EnergyMinimizationMaker,
     NPTMaker,
     AnnealMaker,
@@ -42,7 +42,7 @@ input_mol_dicts = [
 density = 1.0
 prev_dir = "./data"
 
-input_maker = InputMaker()
+input_maker = OpenMMSetFromInputMoleculeSpec()
 energy_maker = EnergyMinimizationMaker()
 npt_maker = NPTMaker()
 anneal_maker = AnnealMaker()

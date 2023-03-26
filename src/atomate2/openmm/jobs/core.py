@@ -23,23 +23,21 @@ from openmm import Platform
 
 from src.atomate2.openmm.jobs.base import BaseOpenmmMaker
 
-import numpy as np
-
 
 @dataclass
-class InputMaker(Maker):
-    name: str = "input maker"
+class OpenMMSetFromInputMoleculeSpec(Maker):
+    name: str = "OpenMMSolutionGen maker"
 
     @job
     def make(
-        self,
-        input_mol_dicts: List[Union[Dict, InputMoleculeSpec]],
-        density: Optional[float] = None,
-        box: Optional[List[float]] = None,
-        prev_dir: Optional[Union[str, Path]] = None
+            self,
+            input_mol_dicts: List[Union[Dict, InputMoleculeSpec]],
+            density: Optional[float] = None,
+            box: Optional[List[float]] = None,
+            **kwargs
     ):
         """
-        Create a job for generating an OpenMMSet instance
+        OpenMMSolutionGen wrapper for generating an OpenMMSet.
 
         Parameters
         ----------
@@ -52,15 +50,16 @@ class InputMaker(Maker):
         box : Optional[List[float]
             Dimensions of simulation box, in units of todo: ?.
             Specify at most one argument between density and box.
-        prev_dir : Optional[Union[str, Path]]
-            Previous OpenMM simulation directory to link files from.
+        kwargs : Dict
+            Keyword arguments for OpenMMSolutionGen
         Returns
         -------
         Job
             Job for generating an OpenMM input set instance.
 
         """
-        input_set = OpenMMSolutionGen(default_charge_method="mmff94").get_input_set(
+        openmm_sol_gen = OpenMMSolutionGen(**kwargs)
+        input_set = openmm_sol_gen.get_input_set(
             input_mol_dicts=input_mol_dicts,
             density=density,
             box=box,
