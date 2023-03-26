@@ -14,11 +14,6 @@ from maggma.stores import MemoryStore
 from jobflow.managers.local import run_locally
 from jobflow import JobStore
 
-# from openff.toolkit.utils.toolkits import ToolkitRegistry
-# from openff.toolkit.utils.toolkit_registry import RDKitToolkitWrapper
-# toolkit_precedence = [RDKitToolkitWrapper]
-# toolkit_registry = ToolkitRegistry(toolkit_precedence)
-# toolkit_registry
 
 input_molecules = list()
 num_water_molecules, num_ethanol_molecules = 400, 20
