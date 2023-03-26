@@ -38,7 +38,7 @@ class ProductionMaker(Maker):
         box: Optional[List[float]] = None,
         prev_dir: Optional[Union[str, Path]] = None
     ):
-        input_job = self.input_maker.make(input_mol_dicts=input_mol_dicts)
+        input_job = self.input_maker.make(input_mol_dicts=input_mol_dicts, density=density, box=box)
 
         energy_job = self.energy_maker.make(input_set=input_job.output.input_set)
 

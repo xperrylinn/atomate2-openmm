@@ -63,7 +63,7 @@ class InputMaker(Maker):
         input_set = OpenMMSolutionGen(default_charge_method="mmff94").get_input_set(
             input_mol_dicts=input_mol_dicts,
             density=density,
-            # box=box,
+            box=box,
         )
         return input_set
 
