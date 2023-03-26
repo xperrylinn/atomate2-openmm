@@ -1,5 +1,9 @@
-from src.atomate2.openmm.flows.core import ProductionMaker
+from src.atomate2.openmm.flows.core import (
+    ProductionMaker,
+    ProductionMaker2,
+)
 from src.atomate2.openmm.jobs.core import (
+    OpenMMSetFromDirectory,
     OpenMMSetFromInputMoleculeSpec,
     EnergyMinimizationMaker,
     NPTMaker,
@@ -37,7 +41,8 @@ input_mol_dicts = [
 density = 1.0
 prev_dir = "./data"
 
-input_maker = OpenMMSetFromInputMoleculeSpec()
+# input_maker = OpenMMSetFromInputMoleculeSpec()
+input_maker = OpenMMSetFromDirectory()
 energy_maker = EnergyMinimizationMaker()
 npt_maker = NPTMaker()
 anneal_maker = AnnealMaker()
@@ -52,13 +57,26 @@ production_maker = ProductionMaker(
     nvt_maker=nvt_maker,
 )
 
-flow = production_maker.make(
-    input_mol_dicts=input_mol_dicts,
-    density=density,
-    prev_dir=prev_dir,
-)
+# production_maker = ProductionMaker2(
+#     name="my_production_maker",
+#     input_maker=input_maker,
+#     energy_maker=energy_maker,
+#     npt_maker=npt_maker,
+#     anneal_maker=anneal_maker,
+#     nvt_maker=nvt_maker,
+# )
 
-flow.draw_graph().show()
+# flow = production_maker.make(
+#     input_mol_dicts=input_mol_dicts,
+#     density=density,
+#     prev_dir=prev_dir,
+# )
+
+input_dir = "/Users/xperrylinn/Documents/Academics/MSSE/spring_2023/Capstone/atomate2-openmm/examples/data/input_sets/default_input_set_no_dot"
+
+flow = production_maker.make(input_dir=input_dir)
+
+# flow.draw_graph().show()
 
 docs_store = MemoryStore()
 

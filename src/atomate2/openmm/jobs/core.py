@@ -25,6 +25,42 @@ from src.atomate2.openmm.jobs.base import BaseOpenmmMaker
 
 
 @dataclass
+class OpenMMSetFromDirectory(Maker):
+    name: str = "OpenMMSetFromDirectory maker"
+
+    @job
+    def make(
+            self,
+            input_dir: Union[str, Path],
+            **kwargs
+    ):
+        """
+        OpenMMSet.from_directory wrapper for generating an OpenMMSet from a directory.
+
+        Parameters
+        ----------
+        input_dir : Union[str, Path]
+            Path to directory containing topology, system, integrator, and state files.
+            See OpenMMSet.from_directory for default file names.
+        kwargs : Dict
+            Keyword arguments for OpenMMSet.from_directory
+        Returns
+        -------
+        Job
+            Job for generating an OpenMM input set instance.
+
+        """
+        input_set = OpenMMSet.from_directory(
+            directory=input_dir,
+            topology_file="topology_pdb",
+            state_file="state_txt",
+            system_file="system_xml",
+            integrator_file="integrator_xml",
+        )
+        return input_set
+
+
+@dataclass
 class OpenMMSetFromInputMoleculeSpec(Maker):
     name: str = "OpenMMSolutionGen maker"
 
@@ -51,7 +87,7 @@ class OpenMMSetFromInputMoleculeSpec(Maker):
             Dimensions of simulation box, in units of todo: ?.
             Specify at most one argument between density and box.
         kwargs : Dict
-            Keyword arguments for OpenMMSolutionGen
+            Keyword arguments for OpenMMSolutionGen.get_input_set
         Returns
         -------
         Job
@@ -72,26 +108,33 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
     name: str = "energy minimization"
 
     @job
-    def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
+    def make(
+            self,
+            input_set: OpenMMSet,
+            platform: Optional[Union[str, Platform]] = "CPU",
+            platform_properties: Optional[Dict[str, str]] = None,
+    ):
         """
         Create a flow that runs in the NPT ensemble.
 
         Parameters
         ----------
-        input_set : .OpenMMSet
+        input_set : OpenMMSet
             A pymatgen structure object.
-        prev_dir : str or Path or None
-            A previous OpenMM simulation directory to link files from.
+        platform : Optional[Union[str, openmm.openmm.Platform]]
+             platform: the OpenMM platform passed to the Simulation.
+        platform_properties : Optional[Dict[str, str]]
+            properties of the OpenMM platform that is passed to the simulation.
 
         Returns
         -------
         Job
             A OpenMM job containing one npt run.
         """
-        platform = Platform.getPlatformByName("OpenCL")
+        platform = Platform.getPlatformByName(platform)
         sim = input_set.get_simulation(
             platform=platform,
-            platformProperties={"DeviceIndex": str(0)},
+            platformProperties=platform_properties
         )
         sim.minimizeEnergy()
         return input_set
@@ -106,7 +149,12 @@ class NPTMaker(BaseOpenmmMaker):
     frequency: int = 10
 
     @job
-    def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
+    def make(
+            self,
+            input_set: OpenMMSet,
+            platform: Optional[Union[str, Platform]] = "CPU",
+            platform_properties: Optional[Dict[str, str]] = None,
+    ):
         """
         Equilibrate the pressure of a simulation in the NPT ensemble.
 
@@ -115,10 +163,12 @@ class NPTMaker(BaseOpenmmMaker):
 
         Parameters
         ----------
-        input_set : .OpenMMSet
+        input_set : OpenMMSet
             A pymatgen structure object.
-        prev_dir : str or Path or None
-            A previous OpenMM simulation directory to link files from.
+        platform : Optional[Union[str, openmm.openmm.Platform]]
+             platform: the OpenMM platform passed to the Simulation.
+        platform_properties : Optional[Dict[str, str]]
+            properties of the OpenMM platform that is passed to the simulation.
 
         Returns
         -------
@@ -129,7 +179,7 @@ class NPTMaker(BaseOpenmmMaker):
         platform = Platform.getPlatformByName("OpenCL")
         sim = input_set.get_simulation(
             platform=platform,
-            platformProperties={"DeviceIndex": str(0)},
+            platform_properties={"DeviceIndex": str(0)},
         )
 
         context = sim.context
@@ -157,7 +207,12 @@ class NVTMaker(BaseOpenmmMaker):
     frequency: int = 10
 
     @job
-    def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
+    def make(
+            self,
+            input_set: OpenMMSet,
+            platform: Optional[Union[str, Platform]] = "CPU",
+            platform_properties: Optional[Dict[str, str]] = None,
+    ):
         """
         Equilibrate the temperature of a simulation in the NPT ensemble.
 
@@ -166,20 +221,22 @@ class NVTMaker(BaseOpenmmMaker):
 
         Parameters
         ----------
-        input_set : .OpenMMSet
+        input_set : OpenMMSet
             A pymatgen structure object.
-        prev_dir : str or Path or None
-            A previous OpenMM simulation directory to link files from.
+        platform : Optional[Union[str, openmm.openmm.Platform]]
+             platform: the OpenMM platform passed to the Simulation.
+        platform_properties : Optional[Dict[str, str]]
+            properties of the OpenMM platform that is passed to the simulation.
 
         Returns
         -------
         Job
             A OpenMM job containing one npt run.
         """
-        platform = Platform.getPlatformByName("OpenCL")
+        platform = Platform.getPlatformByName(platform)
         sim = input_set.get_simulation(
             platform=platform,
-            platformProperties={"DeviceIndex": str(0)},
+            platformProperties=platform_properties,
         )
 
         context = sim.context
@@ -207,7 +264,12 @@ class AnnealMaker(BaseOpenmmMaker):
     temp_steps: int = 100
 
     @job
-    def make(self, input_set: OpenMMSet, prev_dir: Optional[Union[str, Path]] = None):
+    def make(
+            self,
+            input_set: OpenMMSet,
+            platform: Optional[Union[str, Platform]] = "CPU",
+            platform_properties: Optional[Dict[str, str]] = None,
+    ):
         """
         Anneal the simulation at the specified temperature.
 
@@ -217,20 +279,22 @@ class AnnealMaker(BaseOpenmmMaker):
 
         Parameters
         ----------
-        input_set : .OpenMMSet
+        input_set : OpenMMSet
             A pymatgen structure object.
-        prev_dir : str or Path or None
-            A previous OpenMM simulation directory to link files from.
+        platform : Optional[Union[str, openmm.openmm.Platform]]
+             platform: the OpenMM platform passed to the Simulation.
+        platform_properties : Optional[Dict[str, str]]
+            properties of the OpenMM platform that is passed to the simulation.
 
         Returns
         -------
         Job
             A OpenMM job containing one npt run.
         """
-        platform = Platform.getPlatformByName("OpenCL")
+        platform = Platform.getPlatformByName(platform)
         sim = input_set.get_simulation(
             platform=platform,
-            platformProperties={"DeviceIndex": str(0)},
+            platformProperties=platform_properties,
         )
 
         # TODO: timing is currently bugged and not propagating long enough, should be fixed

@@ -32,11 +32,11 @@ print("OpenMM simulation created")
 
 output_dir = output_dir / target_path.stem
 output_dir.mkdir(parents=True, exist_ok=True)
-pdb_reporter = PDBReporter(str(output_dir / "topology.pdb"), 1)
+pdb_reporter = PDBReporter(str(output_dir / "topology_pdb"), 1)
 pdb_reporter.report(sim, sim.context.getState(getPositions=True))
 sim.reporters.append(
     StateDataReporter(
-        str(output_dir / "state.txt"),
+        str(output_dir / "state_txt"),
         10,
         step=True,
         potentialEnergy=True,
@@ -45,7 +45,7 @@ sim.reporters.append(
         density=True,
     )
 )
-sim.reporters.append(DCDReporter(str(output_dir / "trajectory_equil.dcd"), 10))
+sim.reporters.append(DCDReporter(str(output_dir / "trajectory_equil_dcd"), 10))
 print("StateDataReporter addedto simulation reporters")
 
 start = time.time()
@@ -60,7 +60,7 @@ anneal(sim, 400, [100, 100, 100])
 print("Simulation annealed")
 
 sim.reporters.pop()
-sim.reporters.append(DCDReporter(str(output_dir / "trajectory.dcd"), 10))
+sim.reporters.append(DCDReporter(str(output_dir / "trajectory_dcd"), 10))
 print("Simulation DCDReporter added")
 
 sim.step(5000)
