@@ -44,9 +44,9 @@ prev_dir = "./data"
 # input_maker = OpenMMSetFromInputMoleculeSpec()
 input_maker = OpenMMSetFromDirectory()
 energy_maker = EnergyMinimizationMaker()
-npt_maker = NPTMaker()
-anneal_maker = AnnealMaker()
-nvt_maker = NVTMaker()
+npt_maker = NPTMaker(steps=1000)
+anneal_maker = AnnealMaker(steps=1000)
+nvt_maker = NVTMaker(steps=1000)
 
 production_maker = ProductionMaker(
     name="my_production_maker",

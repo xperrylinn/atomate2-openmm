@@ -33,18 +33,34 @@ class ProductionMaker(Maker):
 
     def make(self, input_dir: Union[str, Path]):
 
-        input_job = self.input_maker.make(input_dir=input_dir)
+        openmm_set_from_dir_job_0 = self.input_maker.make(input_dir=input_dir)
 
-        energy_job = self.energy_maker.make(input_set=input_job.output)
+        energy_job = self.energy_maker.make(input_set=openmm_set_from_dir_job_0.output, output_dir=input_dir)
 
-        pressure_job = self.npt_maker.make(input_set=energy_job.output.input_set)
+        openmm_set_from_dir_job_1 = self.input_maker.make(input_dir=input_dir)
 
-        anneal_job = self.anneal_maker.make(input_set=pressure_job.output.input_set)
+        pressure_job = self.npt_maker.make(input_set=openmm_set_from_dir_job_1.output, output_dir=input_dir)
 
-        production_job = self.nvt_maker.make(input_set=anneal_job.output.input_set)
+        openmm_set_from_dir_job_2 = self.input_maker.make(input_dir=input_dir)
+
+        anneal_job = self.anneal_maker.make(input_set=openmm_set_from_dir_job_2.output, output_dir=input_dir)
+
+        openmm_set_from_dir_job_3 = self.input_maker.make(input_dir=input_dir)
+
+        production_job = self.nvt_maker.make(input_set=openmm_set_from_dir_job_3.output, output_dir=input_dir)
 
         my_flow = Flow(
-            [input_job, energy_job, pressure_job, anneal_job, production_job],
+            [
+                openmm_set_from_dir_job_0,
+                energy_job,
+                openmm_set_from_dir_job_1,
+                pressure_job,
+                openmm_set_from_dir_job_2,
+                anneal_job,
+                openmm_set_from_dir_job_3,
+                production_job,
+
+            ],
             output={"log": production_job},
         )
 
@@ -68,13 +84,13 @@ class ProductionMaker2(Maker):
     def make(self, input_dir):
         input_job = self.input_maker.make(input_dir=input_dir)
 
-        energy_job = self.energy_maker.make(input_set=input_job.output.input_set)
+        energy_job = self.energy_maker.make(input_set=input_job.output)
 
-        pressure_job = self.npt_maker.make(input_set=energy_job.output.input_set)
+        pressure_job = self.npt_maker.make(input_set=energy_job.output)
 
-        anneal_job = self.anneal_maker.make(input_set=pressure_job.output.input_set)
+        anneal_job = self.anneal_maker.make(input_set=pressure_job.output)
 
-        production_job = self.nvt_maker.make(input_set=anneal_job.output.input_set)
+        production_job = self.nvt_maker.make(input_set=anneal_job.output)
 
         my_flow = Flow(
             [input_job, energy_job, pressure_job, anneal_job, production_job],

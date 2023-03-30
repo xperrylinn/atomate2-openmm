@@ -23,6 +23,8 @@ from openmm import Platform
 
 from src.atomate2.openmm.jobs.base import BaseOpenmmMaker
 
+import os
+
 
 @dataclass
 class OpenMMSetFromDirectory(Maker):
@@ -53,7 +55,7 @@ class OpenMMSetFromDirectory(Maker):
         input_set = OpenMMSet.from_directory(
             directory=input_dir,
             topology_file="topology_pdb",
-            state_file="state_txt",
+            state_file="state_xml",
             system_file="system_xml",
             integrator_file="integrator_xml",
         )
@@ -100,6 +102,7 @@ class OpenMMSetFromInputMoleculeSpec(Maker):
             density=density,
             box=box,
         )
+
         return input_set
 
 
@@ -111,6 +114,7 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -137,6 +141,8 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
             platformProperties=platform_properties
         )
         sim.minimizeEnergy()
+        new_state_file_path = os.path.join(output_dir, "state_xml")
+        sim.saveState(new_state_file_path)
         return input_set
 
 
@@ -152,6 +158,7 @@ class NPTMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -176,10 +183,10 @@ class NPTMaker(BaseOpenmmMaker):
             A OpenMM job containing one npt run.
         """
 
-        platform = Platform.getPlatformByName("OpenCL")
+        platform = Platform.getPlatformByName(platform)
         sim = input_set.get_simulation(
             platform=platform,
-            platform_properties={"DeviceIndex": str(0)},
+            platformProperties=platform_properties,
         )
 
         context = sim.context
@@ -194,7 +201,8 @@ class NPTMaker(BaseOpenmmMaker):
         sim.step(self.steps)
         system.removeForce(barostat_force_index)
         context.reinitialize(preserveState=True)
-
+        new_state_file_path = os.path.join(output_dir, "state_xml")
+        sim.saveState(new_state_file_path)
         return input_set
 
 
@@ -210,6 +218,7 @@ class NVTMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -251,7 +260,8 @@ class NVTMaker(BaseOpenmmMaker):
         sim.step(self.steps)
         system.removeForce(thermostat_force_index)
         context.reinitialize(preserveState=True)
-
+        new_state_file_path = os.path.join(output_dir, "state_xml")
+        sim.saveState(new_state_file_path)
         return input_set
 
 
@@ -267,6 +277,7 @@ class AnnealMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -312,5 +323,6 @@ class AnnealMaker(BaseOpenmmMaker):
         for temp in self.temperatures:
             integrator.setTemperature(temp * kelvin)
             sim.step(self.steps[2] // self.temp_steps)
-
+        new_state_file_path = os.path.join(output_dir, "state_xml")
+        sim.saveState(new_state_file_path)
         return input_set
