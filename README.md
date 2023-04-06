@@ -1,3 +1,5 @@
+# Underconstruction...
+
 # atomate2-openmm
 An add-on package to atomate2 for OpenMM
 
@@ -6,3 +8,8 @@ An add-on package to atomate2 for OpenMM
 1. `conda create --name atomate2-openmm python=3.8`
 2. `conda activate atomate2-openmm`
 3. `pip install .` from repository root
+
+# Contributing
+- Open A PR or file a GitHub issue
+- Numpy style documentation
+- Formatting with black

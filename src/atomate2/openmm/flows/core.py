@@ -35,19 +35,19 @@ class ProductionMaker(Maker):
 
         openmm_set_from_dir_job_0 = self.input_maker.make(input_dir=input_dir)
 
-        energy_job = self.energy_maker.make(input_set=openmm_set_from_dir_job_0.output, output_dir=input_dir)
+        energy_job = self.energy_maker.make(input_set=openmm_set_from_dir_job_0.output)
 
         openmm_set_from_dir_job_1 = self.input_maker.make(input_dir=input_dir)
 
-        pressure_job = self.npt_maker.make(input_set=openmm_set_from_dir_job_1.output, output_dir=input_dir)
+        pressure_job = self.npt_maker.make(input_set=openmm_set_from_dir_job_1.output)
 
         openmm_set_from_dir_job_2 = self.input_maker.make(input_dir=input_dir)
 
-        anneal_job = self.anneal_maker.make(input_set=openmm_set_from_dir_job_2.output, output_dir=input_dir)
+        anneal_job = self.anneal_maker.make(input_set=openmm_set_from_dir_job_2.output)
 
         openmm_set_from_dir_job_3 = self.input_maker.make(input_dir=input_dir)
 
-        production_job = self.nvt_maker.make(input_set=openmm_set_from_dir_job_3.output, output_dir=input_dir)
+        production_job = self.nvt_maker.make(input_set=openmm_set_from_dir_job_3.output)
 
         my_flow = Flow(
             [
@@ -81,8 +81,14 @@ class ProductionMaker2(Maker):
     anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker)
     nvt_maker: NVTMaker = Field(default_factory=NVTMaker)
 
-    def make(self, input_dir):
-        input_job = self.input_maker.make(input_dir=input_dir)
+    def make(
+            self,
+            input_mol_dicts: List[Union[Dict, InputMoleculeSpec]],
+            density: Optional[float] = None,
+            box: Optional[List[float]] = None,
+            prev_dir: Optional[Union[str, Path]] = None
+    ):
+        input_job = self.input_maker.make(input_mol_dicts=input_mol_dicts, density=density, box=box, default_charge_method="mmff94")
 
         energy_job = self.energy_maker.make(input_set=input_job.output)
 

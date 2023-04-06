@@ -8,6 +8,7 @@ from jobflow import Maker, job
 from pymatgen.io.openmm.generators import OpenMMSolutionGen
 from pymatgen.io.openmm.schema import InputMoleculeSpec
 from pymatgen.io.openmm.sets import OpenMMSet
+from pymatgen.io.openmm.inputs import StateInput
 
 from openmm.openmm import (
     MonteCarloBarostat,
@@ -23,7 +24,7 @@ from openmm import Platform
 
 from src.atomate2.openmm.jobs.base import BaseOpenmmMaker
 
-import os
+import numpy as np
 
 
 @dataclass
@@ -64,7 +65,7 @@ class OpenMMSetFromDirectory(Maker):
 
 @dataclass
 class OpenMMSetFromInputMoleculeSpec(Maker):
-    name: str = "OpenMMSolutionGen maker"
+    name: str = "OpenMMSetFromInputMoleculeSpec maker"
 
     @job
     def make(
@@ -72,6 +73,10 @@ class OpenMMSetFromInputMoleculeSpec(Maker):
             input_mol_dicts: List[Union[Dict, InputMoleculeSpec]],
             density: Optional[float] = None,
             box: Optional[List[float]] = None,
+            topology_file: str="topology_pdb",
+            state_file: str="state_xml",
+            system_file: str="system_xml",
+            integrator_file: str="integrator_xml",
             **kwargs
     ):
         """
@@ -96,7 +101,13 @@ class OpenMMSetFromInputMoleculeSpec(Maker):
             Job for generating an OpenMM input set instance.
 
         """
-        openmm_sol_gen = OpenMMSolutionGen(**kwargs)
+        openmm_sol_gen = OpenMMSolutionGen(
+            topology_file=topology_file,
+            state_file=state_file,
+            system_file=system_file,
+            integrator_file=integrator_file,
+            **kwargs
+        )
         input_set = openmm_sol_gen.get_input_set(
             input_mol_dicts=input_mol_dicts,
             density=density,
@@ -114,7 +125,6 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
-            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -141,8 +151,17 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
             platformProperties=platform_properties
         )
         sim.minimizeEnergy()
-        new_state_file_path = os.path.join(output_dir, "state_xml")
-        sim.saveState(new_state_file_path)
+
+        state = StateInput(
+            sim.context.getState(
+                getPositions=True,
+                getVelocities=True,
+                enforcePeriodicBox=True,
+            )
+        )
+
+        input_set[input_set.state_file] = state
+
         return input_set
 
 
@@ -158,7 +177,6 @@ class NPTMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
-            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -201,8 +219,17 @@ class NPTMaker(BaseOpenmmMaker):
         sim.step(self.steps)
         system.removeForce(barostat_force_index)
         context.reinitialize(preserveState=True)
-        new_state_file_path = os.path.join(output_dir, "state_xml")
-        sim.saveState(new_state_file_path)
+
+        # output_set = copy.deepcopy(input_set)
+        state = StateInput(
+            context.getState(
+                getPositions=True,
+                getVelocities=True,
+                enforcePeriodicBox=True,
+            )
+        )
+
+        input_set[input_set.state_file] = state
         return input_set
 
 
@@ -218,7 +245,6 @@ class NVTMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
-            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -254,30 +280,41 @@ class NVTMaker(BaseOpenmmMaker):
             system.usesPeriodicBoundaryConditions()
         ), "system must use periodic boundary conditions for pressure equilibration."
         thermostat_force_index = system.addForce(
-            AndersenThermostat(self.temperature * kelvin, self.frequency * pico * second)
+            AndersenThermostat(self.temperature * kelvin, pico * second * self.frequency)
         )
         context.reinitialize(preserveState=True)
         sim.step(self.steps)
         system.removeForce(thermostat_force_index)
         context.reinitialize(preserveState=True)
-        new_state_file_path = os.path.join(output_dir, "state_xml")
-        sim.saveState(new_state_file_path)
+
+        state = StateInput(
+            context.getState(
+                getPositions=True,
+                getVelocities=True,
+                enforcePeriodicBox=True,
+            )
+        )
+
+        input_set[input_set.state_file] = state
         return input_set
 
 
 @dataclass
 class AnnealMaker(BaseOpenmmMaker):
+    """
+    steps : Union[Tuple[int, int, int], int]
 
-    steps: Tuple[int, int, int] = (500000, 1000000, 500000)
+    """
+
+    steps: Union[Tuple[int, int, int], int] = (500000, 1000000, 500000)
     name: str = "anneal simulation"
-    temperatures: Tuple[int, int, int] = (298, 400, 298)
+    temperatures: Union[Tuple[int, int, int], int] = (298, 400, 298)
     temp_steps: int = 100
 
     @job
     def make(
             self,
             input_set: OpenMMSet,
-            output_dir: Union[str, Path],
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -308,21 +345,51 @@ class AnnealMaker(BaseOpenmmMaker):
             platformProperties=platform_properties,
         )
 
-        # TODO: timing is currently bugged and not propagating long enough, should be fixed
-        assert len(self.steps) == 3, ""
+        context = sim.context
         integrator = sim.context.getIntegrator()
         old_temperature = integrator.getTemperature()
-        temp_step_size = abs(self.temperature * kelvin - old_temperature) / self.temp_steps
 
-        for temp in self.temperatures:
+        # Type checking to assemble annealing step count and temperatures for heating, holding, cooling
+        if isinstance(self.temperatures, int):
+            anneal_temps = [old_temperature, self.temperatures, old_temperature]
+        else:
+            anneal_temps = self.temperatures
+        if isinstance(self.temp_steps, int):
+            anneal_steps = [self.temp_steps] * 3
+        else:
+            anneal_steps = self.temp_steps
+
+        # Heating temperature
+        temp_step_size = abs(anneal_temps[0] * kelvin - old_temperature) / anneal_steps[0]
+        for temp in np.arange(
+            old_temperature + temp_step_size,
+            anneal_temps[0] * kelvin + temp_step_size,
+            temp_step_size,
+        ):
             integrator.setTemperature(temp * kelvin)
-            sim.step(self.steps[0] // self.temp_steps)
+            sim.step(self.steps[0] // anneal_steps[0])
 
+        # Holding
+        temp_step_size = anneal_steps[1]
         sim.step(self.steps[1])
 
-        for temp in self.temperatures:
+        # Cooling temperature
+        temp_step_size = abs(anneal_temps[1] * kelvin - anneal_temps[2] * kelvin) / anneal_steps[2]
+        for temp in np.arange(
+            anneal_temps[1] * kelvin - temp_step_size,
+            anneal_temps[2] * kelvin - temp_step_size + temp_step_size,
+            -1 * temp_step_size,
+        ):
             integrator.setTemperature(temp * kelvin)
-            sim.step(self.steps[2] // self.temp_steps)
-        new_state_file_path = os.path.join(output_dir, "state_xml")
-        sim.saveState(new_state_file_path)
+            sim.step(self.steps[2] // anneal_steps[2])
+
+        state = StateInput(
+            context.getState(
+                getPositions=True,
+                getVelocities=True,
+                enforcePeriodicBox=True,
+            )
+        )
+
+        input_set[input_set.state_file] = state
         return input_set

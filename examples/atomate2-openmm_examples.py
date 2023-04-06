@@ -38,26 +38,17 @@ input_mol_dicts = [
     ethanol_molecs,
     water_molecs,
 ]
-density = 1.0
+density = 0.2
 prev_dir = "./data"
 
-# input_maker = OpenMMSetFromInputMoleculeSpec()
-input_maker = OpenMMSetFromDirectory()
+input_maker = OpenMMSetFromInputMoleculeSpec()
+# input_maker = OpenMMSetFromDirectory()
 energy_maker = EnergyMinimizationMaker()
 npt_maker = NPTMaker(steps=1000)
-anneal_maker = AnnealMaker(steps=1000)
+anneal_maker = AnnealMaker(steps=[100, 100, 100], temperatures=[500, 1000, 500], temp_steps=[100, 100, 100])
 nvt_maker = NVTMaker(steps=1000)
 
-production_maker = ProductionMaker(
-    name="my_production_maker",
-    input_maker=input_maker,
-    energy_maker=energy_maker,
-    npt_maker=npt_maker,
-    anneal_maker=anneal_maker,
-    nvt_maker=nvt_maker,
-)
-
-# production_maker = ProductionMaker2(
+# production_maker = ProductionMaker(
 #     name="my_production_maker",
 #     input_maker=input_maker,
 #     energy_maker=energy_maker,
@@ -66,15 +57,24 @@ production_maker = ProductionMaker(
 #     nvt_maker=nvt_maker,
 # )
 
-# flow = production_maker.make(
-#     input_mol_dicts=input_mol_dicts,
-#     density=density,
-#     prev_dir=prev_dir,
-# )
+production_maker = ProductionMaker2(
+    name="my_production_maker",
+    input_maker=input_maker,
+    energy_maker=energy_maker,
+    npt_maker=npt_maker,
+    anneal_maker=anneal_maker,
+    nvt_maker=nvt_maker,
+)
+
+flow = production_maker.make(
+    input_mol_dicts=input_mol_dicts,
+    density=density,
+    prev_dir=prev_dir,
+)
 
 input_dir = "/Users/xperrylinn/Documents/Academics/MSSE/spring_2023/Capstone/atomate2-openmm/examples/data/input_sets/default_input_set_no_dot"
 
-flow = production_maker.make(input_dir=input_dir)
+# flow = production_maker.make(input_dir=input_dir)
 
 # flow.draw_graph().show()
 
