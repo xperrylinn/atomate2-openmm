@@ -20,8 +20,7 @@ from pymatgen.io.openmm.schema import InputMoleculeSpec
 @dataclass
 class ProductionMaker(Maker):
     """
-
-
+    Class for running
     """
     name: str = "production"
 
@@ -31,33 +30,24 @@ class ProductionMaker(Maker):
     anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker)
     nvt_maker: NVTMaker = Field(default_factory=NVTMaker)
 
-    def make(self, input_dir: Union[str, Path]):
+    def make(self, *args, **kwargs):
 
-        openmm_set_from_dir_job_0 = self.input_maker.make(input_dir=input_dir)
+        openmm_set_gen = self.input_maker.make(*args, **kwargs)
 
-        energy_job = self.energy_maker.make(input_set=openmm_set_from_dir_job_0.output)
+        energy_job = self.energy_maker.make(input_set=openmm_set_gen.output)
 
-        openmm_set_from_dir_job_1 = self.input_maker.make(input_dir=input_dir)
+        pressure_job = self.npt_maker.make(input_set=energy_job.output)
 
-        pressure_job = self.npt_maker.make(input_set=openmm_set_from_dir_job_1.output)
+        anneal_job = self.anneal_maker.make(input_set=pressure_job.output)
 
-        openmm_set_from_dir_job_2 = self.input_maker.make(input_dir=input_dir)
-
-        anneal_job = self.anneal_maker.make(input_set=openmm_set_from_dir_job_2.output)
-
-        openmm_set_from_dir_job_3 = self.input_maker.make(input_dir=input_dir)
-
-        production_job = self.nvt_maker.make(input_set=openmm_set_from_dir_job_3.output)
+        production_job = self.nvt_maker.make(input_set=anneal_job.output)
 
         my_flow = Flow(
             [
-                openmm_set_from_dir_job_0,
+                openmm_set_gen,
                 energy_job,
-                openmm_set_from_dir_job_1,
                 pressure_job,
-                openmm_set_from_dir_job_2,
                 anneal_job,
-                openmm_set_from_dir_job_3,
                 production_job,
 
             ],
@@ -88,7 +78,7 @@ class ProductionMaker2(Maker):
             box: Optional[List[float]] = None,
             prev_dir: Optional[Union[str, Path]] = None
     ):
-        input_job = self.input_maker.make(input_mol_dicts=input_mol_dicts, density=density, box=box, default_charge_method="mmff94")
+        input_job = self.input_maker.make(input_mol_dicts=input_mol_dicts, density=density, box=box)
 
         energy_job = self.energy_maker.make(input_set=input_job.output)
 
