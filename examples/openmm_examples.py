@@ -22,8 +22,8 @@ output_dir = pathlib.Path(sys.argv[2])
 target_paths = [path for path in input_dir.iterdir()]
 # assert len(target_paths) == 1, "there must be exactly 1 job to run"
 
-# target_path = target_paths[0]
-target_path = "/Users/xperrylinn/Documents/Academics/MSSE/spring_2023/Capstone/atomate2-openmm/examples/data/input_sets/default_input_set"
+target_path = target_paths[0]
+# target_path = "/Users/xperrylinn/Documents/Academics/MSSE/spring_2023/Capstone/atomate2-openmm/examples/data/input_sets/default_input_set"
 input_set = OpenMMSet.from_directory(target_path)
 
 input_set.write_input("/Users/xperrylinn/Documents/Academics/MSSE/spring_2023/Capstone/atomate2-openmm/examples/data/input_sets/default_input_set_2", make_dir=True)

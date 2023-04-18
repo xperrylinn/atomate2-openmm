@@ -1,6 +1,5 @@
 from src.atomate2.openmm.flows.core import (
     ProductionMaker,
-    ProductionMaker2,
 )
 from src.atomate2.openmm.jobs.core import (
     OpenMMSetFromDirectory,
@@ -17,6 +16,13 @@ from maggma.stores import MemoryStore
 
 from jobflow.managers.local import run_locally
 from jobflow import JobStore
+
+from openmm.app import DCDReporter
+
+from tempfile import (
+    NamedTemporaryFile,
+    TemporaryDirectory,
+)
 
 
 def test_production_maker_from_input_mol_spec():
@@ -38,7 +44,9 @@ def test_production_maker_from_input_mol_spec():
         water_molecs,
     ]
     density = 0.2
-    prev_dir = "./data"
+
+    # Create temp files
+    energy_min_tmp_file = NamedTemporaryFile()
 
     # Define jobs
     input_maker = OpenMMSetFromInputMoleculeSpec()
@@ -56,14 +64,18 @@ def test_production_maker_from_input_mol_spec():
         nvt_maker=nvt_maker,
     )
 
+    # Create a temporary directory for simulation reporters
+    temp_dir = TemporaryDirectory()
+
     flow = production_maker.make(
+        output_dir=temp_dir.name,
         input_mol_dicts=input_mol_dicts,
         density=density,
         # box=box,
         default_charge_method="mmff94",
     )
 
-    flow.draw_graph().show()
+    # flow.draw_graph().show()
 
     docs_store = MemoryStore()
 
@@ -88,7 +100,10 @@ def test_production_maker_from_directory():
     nvt_maker = NVTMaker(steps=1000)
 
     # Assumes test are run from repo root
-    input_dir = "./examples/data/input_sets/default_input_set_no_dot"
+    input_dir = "./tests/data/input_sets/default_input_set_no_dot"
+
+    # Create a temporary directory for simulation reporters
+    temp_dir = TemporaryDirectory()
 
     production_maker = ProductionMaker(
         name="test_production_maker_from_directory",
@@ -99,9 +114,9 @@ def test_production_maker_from_directory():
         nvt_maker=nvt_maker,
     )
 
-    flow = production_maker.make(input_dir=input_dir)
+    flow = production_maker.make(output_dir=temp_dir.name, input_dir=input_dir)
 
-    flow.draw_graph().show()
+    # flow.draw_graph().show()
 
     docs_store = MemoryStore()
 
@@ -110,6 +125,7 @@ def test_production_maker_from_directory():
     responses = run_locally(flow, store=store)
 
     print(responses)
+    print("DONE!?!?")
 
 
 if __name__ == "__main__":

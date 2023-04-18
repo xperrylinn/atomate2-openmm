@@ -20,11 +20,18 @@ from openmm.unit import (
     pico,
     second
 )
+from openmm.app import (
+    DCDReporter,
+    StateDataReporter,
+    PDBReporter,
+)
 from openmm import Platform
 
 from src.atomate2.openmm.jobs.base import BaseOpenmmMaker
 
 import numpy as np
+
+import os
 
 
 @dataclass
@@ -125,16 +132,19 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: str,
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
         """
-        Create a flow that runs in the NPT ensemble.
+        Geometry optimization Job maker.
 
         Parameters
         ----------
         input_set : OpenMMSet
             A pymatgen structure object.
+        output_dir : str
+            Directory to write reporter files to.
         platform : Optional[Union[str, openmm.openmm.Platform]]
              platform: the OpenMM platform passed to the Simulation.
         platform_properties : Optional[Dict[str, str]]
@@ -145,13 +155,26 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
         Job
             A OpenMM job containing one npt run.
         """
+        # Set compute platform
         platform = Platform.getPlatformByName(platform)
+
+        # Get a fresh Simulation from OpenMMSet input argument
         sim = input_set.get_simulation(
             platform=platform,
             platformProperties=platform_properties
         )
+
+        # Add DCD reporter
+        dcd_reporter = DCDReporter(
+            file=os.path.join(output_dir, "energy_minimation_trajecotry.dcd"),
+            reportInterval=10,
+        )
+        sim.reporters.append(dcd_reporter)
+
+        # Minimize the energy
         sim.minimizeEnergy()
 
+        # Get a fresh state object and update the OpenMMSet
         state = StateInput(
             sim.context.getState(
                 getPositions=True,
@@ -159,7 +182,6 @@ class EnergyMinimizationMaker(BaseOpenmmMaker):
                 enforcePeriodicBox=True,
             )
         )
-
         input_set[input_set.state_file] = state
 
         return input_set
@@ -177,19 +199,22 @@ class NPTMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: str,
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
         """
         Equilibrate the pressure of a simulation in the NPT ensemble.
 
-        Adds and then removes a openmm.MonteCarlo Barostat to shift the system
+        Adds and then removes a openmm.MonteCarloBarostat to shift the system
         into the NPT ensemble.
 
         Parameters
         ----------
         input_set : OpenMMSet
             A pymatgen structure object.
+        output_dir : str
+            Directory to write reporter files to.
         platform : Optional[Union[str, openmm.openmm.Platform]]
              platform: the OpenMM platform passed to the Simulation.
         platform_properties : Optional[Dict[str, str]]
@@ -200,13 +225,23 @@ class NPTMaker(BaseOpenmmMaker):
         Job
             A OpenMM job containing one npt run.
         """
-
+        # Set compute platform
         platform = Platform.getPlatformByName(platform)
+
+        # Get a fresh Simulation from OpenMMSet input argument
         sim = input_set.get_simulation(
             platform=platform,
-            platformProperties=platform_properties,
+            platformProperties=platform_properties
         )
 
+        # Add DCD reporter
+        dcd_reporter = DCDReporter(
+            file=os.path.join(output_dir, "npt_trajecotry.dcd"),
+            reportInterval=10,
+        )
+        sim.reporters.append(dcd_reporter)
+
+        # Add barostat to system
         context = sim.context
         system = context.getSystem()
         assert (
@@ -215,8 +250,14 @@ class NPTMaker(BaseOpenmmMaker):
         barostat_force_index = system.addForce(
             MonteCarloBarostat(self.pressure * atmosphere, self.temperature * kelvin, 10)
         )
+
+        # Re-init the context afte adding thermostat to System
         context.reinitialize(preserveState=True)
+
+        # Run the simulation
         sim.step(self.steps)
+
+        # Remove thermostat and update context
         system.removeForce(barostat_force_index)
         context.reinitialize(preserveState=True)
 
@@ -245,19 +286,22 @@ class NVTMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: str,
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
         """
-        Equilibrate the temperature of a simulation in the NPT ensemble.
+        Equilibrate the temperature of a simulation in the NVT ensemble.
 
-        Adds and then removes a openmm.MonteCarlo Barostat to shift the system
-        into the NPT ensemble.
+        Adds and then removes a openmm.AndersenThermostat Thermostat to shift the system
+        into the NVT ensemble.
 
         Parameters
         ----------
         input_set : OpenMMSet
             A pymatgen structure object.
+        output_dir : str
+            Directory to write reporter files to.
         platform : Optional[Union[str, openmm.openmm.Platform]]
              platform: the OpenMM platform passed to the Simulation.
         platform_properties : Optional[Dict[str, str]]
@@ -266,14 +310,25 @@ class NVTMaker(BaseOpenmmMaker):
         Returns
         -------
         Job
-            A OpenMM job containing one npt run.
+            A OpenMM job containing one nvt run.
         """
+        # Set compute platform
         platform = Platform.getPlatformByName(platform)
+
+        # Get a fresh Simulation from OpenMMSet input argument
         sim = input_set.get_simulation(
             platform=platform,
-            platformProperties=platform_properties,
+            platformProperties=platform_properties
         )
 
+        # Add DCD reporter
+        dcd_reporter = DCDReporter(
+            file=os.path.join(output_dir, "nvt_trajecotry.dcd"),
+            reportInterval=10,
+        )
+        sim.reporters.append(dcd_reporter)
+
+        # Add thermostat to system
         context = sim.context
         system = context.getSystem()
         assert (
@@ -282,20 +337,27 @@ class NVTMaker(BaseOpenmmMaker):
         thermostat_force_index = system.addForce(
             AndersenThermostat(self.temperature * kelvin, pico * second * self.frequency)
         )
+
+        # Re-init the context afte adding thermostat to System
         context.reinitialize(preserveState=True)
+
+        # Run the simulation
         sim.step(self.steps)
+
+        # Remove thermostat and update context
         system.removeForce(thermostat_force_index)
         context.reinitialize(preserveState=True)
 
+        # Get a fresh state object and update the OpenMMSet
         state = StateInput(
-            context.getState(
+            sim.context.getState(
                 getPositions=True,
                 getVelocities=True,
                 enforcePeriodicBox=True,
             )
         )
-
         input_set[input_set.state_file] = state
+
         return input_set
 
 
@@ -315,6 +377,7 @@ class AnnealMaker(BaseOpenmmMaker):
     def make(
             self,
             input_set: OpenMMSet,
+            output_dir: str,
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -329,6 +392,8 @@ class AnnealMaker(BaseOpenmmMaker):
         ----------
         input_set : OpenMMSet
             A pymatgen structure object.
+        output_dir : str
+            Directory to write reporter files to.
         platform : Optional[Union[str, openmm.openmm.Platform]]
              platform: the OpenMM platform passed to the Simulation.
         platform_properties : Optional[Dict[str, str]]
@@ -339,11 +404,21 @@ class AnnealMaker(BaseOpenmmMaker):
         Job
             A OpenMM job containing one npt run.
         """
+        # Set compute platform
         platform = Platform.getPlatformByName(platform)
+
+        # Get a fresh Simulation from OpenMMSet input argument
         sim = input_set.get_simulation(
             platform=platform,
-            platformProperties=platform_properties,
+            platformProperties=platform_properties
         )
+
+        # Add DCD reporter
+        dcd_reporter = DCDReporter(
+            file=os.path.join(output_dir, "anneal_trajecotry.dcd"),
+            reportInterval=10,
+        )
+        sim.reporters.append(dcd_reporter)
 
         context = sim.context
         integrator = sim.context.getIntegrator()
@@ -383,13 +458,14 @@ class AnnealMaker(BaseOpenmmMaker):
             integrator.setTemperature(temp * kelvin)
             sim.step(self.steps[2] // anneal_steps[2])
 
+        # Get a fresh state object and update the OpenMMSet
         state = StateInput(
-            context.getState(
+            sim.context.getState(
                 getPositions=True,
                 getVelocities=True,
                 enforcePeriodicBox=True,
             )
         )
-
         input_set[input_set.state_file] = state
+
         return input_set
