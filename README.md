@@ -14,7 +14,7 @@ WIP
 
 # Python Environment Setup
 
-A Python3.10 environment setup using conda according to the steps below:
+A Python3.8 environment setup using conda according to the steps below:
 
 1. `conda env create -f environment.yaml`
 2. `conda activate atomate2-openmm`
