@@ -20,6 +20,10 @@ A Python3.8 environment setup using conda according to the steps below:
 2. `conda activate atomate2-openmm`
 3. `pip install -e .` from repository root
 
+Environment variables:
+
+- JOBFLOW_CONFIG_FILE=file/path/to/jobflow.yaml
+
 # Contributing
 - Open A PR or file a GitHub issue
 - Numpy style documentation

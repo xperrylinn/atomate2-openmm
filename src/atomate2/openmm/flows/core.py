@@ -49,7 +49,6 @@ class ProductionMaker(Maker):
                 pressure_job,
                 anneal_job,
                 production_job,
-
             ],
             output={"log": production_job},
         )

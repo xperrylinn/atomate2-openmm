@@ -1,4 +1,4 @@
-name: atomate2-openmm-test
+name: atomate2-openmm
 channels:
   - conda-forge
 dependencies:
