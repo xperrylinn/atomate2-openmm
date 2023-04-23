@@ -1,4 +1,10 @@
-from typing import List, Union, Optional, Dict, Tuple
+from typing import (
+    List,
+    Union,
+    Optional,
+    Dict,
+    Tuple,
+)
 from pathlib import Path
 
 from dataclasses import dataclass
