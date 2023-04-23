@@ -23,10 +23,5 @@ def test_input_dir():
 
 
 @pytest.fixture(scope="function")
-def test_output_dir():
-    from tempfile import TemporaryDirectory
-
-    # Create a temporary directory to read/write output files
-    output_dir = TemporaryDirectory()
-
-    return output_dir.name
+def test_output_dir(tmp_path_factory):
+    return tmp_path_factory.mktemp(basename="output")

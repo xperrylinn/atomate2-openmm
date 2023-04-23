@@ -27,10 +27,9 @@ def test_energy_minimization_maker(test_input_dir, test_output_dir):
     assert isinstance(output, OpenMMSet)
     # todo: mock or not-mock and assert PE is < initial PE?
 
-    with jstore.additional_stores["data"] as s:
-        doc = s.query_one({"job_uuid": job.uuid})
-        dd = doc["data"]
-        assert dd["@class"] == "Chgcar"
+    with jstore.docs_store as s:
+        doc = s.query_one({"uuid": job.uuid})
+        assert doc["output"]["@class"] == "OpenMMSet"
 
 
 def test_npt_maker():
