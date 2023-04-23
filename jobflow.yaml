@@ -1,7 +1,7 @@
 JOB_STORE:
   docs_store:
     type: MongoURIStore
-    uri: mongodb+srv://xperrylinn:jjdtEsQFNRgnot@atomate2-openmm.vlzvqsg.mongodb.net/?retryWrites=true&w=majority
+    uri: mongodb+srv://<<USERNAME>>:<<PASSWORD>>@atomate2-openmm.vlzvqsg.mongodb.net/?retryWrites=true&w=majority
     collection_name: outputs
   additional_stores:
     data:

@@ -10,6 +10,7 @@ def platform_for_test():
 def platform_props_for_test():
     return None
 
+
 @pytest.fixture(scope="session")
 def test_input_dir():
     import os

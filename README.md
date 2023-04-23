@@ -12,7 +12,7 @@ WIP
 
 # Setup for development
 
-# Python Environment Setup
+## Python Environment Setup
 
 A Python3.8 environment setup using conda according to the steps below:
 
@@ -20,9 +20,15 @@ A Python3.8 environment setup using conda according to the steps below:
 2. `conda activate atomate2-openmm`
 3. `pip install -e .` from repository root
 
-Environment variables:
+## Environment variables:
 
 - JOBFLOW_CONFIG_FILE=file/path/to/jobflow.yaml
+
+## Running Test
+
+From root of repo, run the following command:
+
+`python -m pytest tests`
 
 # Contributing
 - Open A PR or file a GitHub issue
