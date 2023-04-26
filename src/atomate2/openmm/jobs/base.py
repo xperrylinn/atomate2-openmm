@@ -3,6 +3,7 @@ from jobflow import job, Maker
 from dataclasses import dataclass
 from pathlib import Path
 from pymatgen.io.openmm.sets import OpenMMSet
+from pymatgen.io.openmm.inputs import StateInput
 from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
 from openmm import (
     Platform,
@@ -45,6 +46,7 @@ def openmm_job(method: Callable):
     callable
         A decorated version of the make function that will generate OpenMM jobs.
     """
+    # todo: add data keyword argument to specify where to write bigger files like trajectory files
     return job(method, output_schema=OpenMMTaskDocument)
 
 
@@ -119,7 +121,7 @@ class BaseOpenmmMaker(Maker):
             pdb_reporter = DCDReporter(**self.pdb_reporter_kwargs)
             sim.reporters.append(pdb_reporter)
 
-        # Add barotats
+        # todo: move into jobs
         force_indices = list()
         context = sim.context
         system = context.getSystem()
@@ -141,7 +143,15 @@ class BaseOpenmmMaker(Maker):
 
         return sim, force_indices
 
-    def _close_base_openmm_task(self, context: Context, force_indices: Optional[list]):
+    def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, force_indices: Optional[list]):
+
+
+        # Remove any forces added to the system
+        system = context.getSystem()
+        for index in force_indices:
+            system.removeForce(index)
+        context.reinitialize(preserveState=True)
+
         # output_set = copy.deepcopy(input_set)
         state = StateInput(
             context.getState(
@@ -152,5 +162,8 @@ class BaseOpenmmMaker(Maker):
         )
 
         input_set[input_set.state_file] = state
-        task_doc =
+        task_doc = OpenMMTaskDocument(
+            last_updated=,
+            input_set=input_set,
+        )
         return input_set
