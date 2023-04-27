@@ -90,6 +90,7 @@ class OpenMMSetFromInputMoleculeSpec(Maker):
             state_file: str="state_xml",
             system_file: str="system_xml",
             integrator_file: str="integrator_xml",
+            contents_file: str="contents_json",
             **kwargs
     ):
         """
@@ -119,6 +120,7 @@ class OpenMMSetFromInputMoleculeSpec(Maker):
             state_file=state_file,
             system_file=system_file,
             integrator_file=integrator_file,
+            contents_file=contents_file,
             **kwargs
         )
         input_set = openmm_sol_gen.get_input_set(

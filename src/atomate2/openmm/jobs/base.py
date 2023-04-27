@@ -162,8 +162,8 @@ class BaseOpenmmMaker(Maker):
         )
 
         input_set[input_set.state_file] = state
-        task_doc = OpenMMTaskDocument(
-            last_updated=,
-            input_set=input_set,
-        )
+        # task_doc = OpenMMTaskDocument(#
+        #     last_updated=,
+        #     input_set=input_set,
+        # )
         return input_set
