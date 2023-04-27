@@ -24,7 +24,7 @@ class StateReports(BaseModel):
     density: List[float] = Field(None, description="List of densities")
 
     @classmethod
-    def from_state_file(cls, state_file: Union[str, Path]):
+    def from_state_file(cls, state_file: Union[str, pathlib.Path]):
         data = np.loadtxt(state_file, delimiter=',', skiprows=1)
 
         # Define the order of attributes in the data
