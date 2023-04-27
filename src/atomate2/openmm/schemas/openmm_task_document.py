@@ -98,11 +98,12 @@ class CalculationOutput(BaseModel):
     dcd_reports: DCDReports = Field(None, description="DCD reporter output")
 
     @classmethod
-    def from_output_dir(cls, output_dir: Union[str, pathlib.Path]):
+    def from_directory(cls, output_dir: Union[str, pathlib.Path]):
         # need to write final input_set to output_dir
         # parse state reporter
         # will need to figure out location of dcd_reporter from  additional store, which is global
 
+        # in this approach, we will need to write out the final input_set to the output_dir
         # should we put the OpenMMSet in a sub-directory or just dump it's
         # contents into the output_dir? that will influence this method
         output_dir = pathlib.Path(output_dir)
