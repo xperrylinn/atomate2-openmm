@@ -58,7 +58,6 @@ class BaseOpenmmMaker(Maker):
     name: str = "base openmm job"
     get_simulation_kwargs: Optional[dict] = None
     dcd_reporter_kwargs: Optional[dict] = None
-    pdb_reporter_kwargs: Optional[dict] = None
     state_reporter_kwargs: Optional[dict] = None
     pressure_barostat_kwargs: Optional[dict] = None
     temperature_barostat_kwargs: Optional[dict] = None
@@ -121,27 +120,7 @@ class BaseOpenmmMaker(Maker):
             pdb_reporter = DCDReporter(**self.pdb_reporter_kwargs)
             sim.reporters.append(pdb_reporter)
 
-        # todo: move into jobs
-        force_indices = list()
-        context = sim.context
-        system = context.getSystem()
-        if self.temperature_barostat_kwargs:
-            thermostat_force_index = system.addForce(
-                AndersenThermostat(self.temperature * kelvin, pico * second * self.frequency)
-            )
-            context.reinitialize(preserveState=True)
-            force_indices.append(thermostat_force_index)
-        if self.pressure_barostat_kwargs:
-            assert (
-                system.usesPeriodicBoundaryConditions()
-            ), "system must use periodic boundary conditions for pressure equilibration."
-            barostat_force_index = system.addForce(
-                MonteCarloBarostat(self.pressure * atmosphere, self.temperature * kelvin, 10)
-            )
-            context.reinitialize(preserveState=True)
-            force_indices.append(barostat_force_index)
-
-        return sim, force_indices
+        return sim
 
     def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, force_indices: Optional[list]):
 
