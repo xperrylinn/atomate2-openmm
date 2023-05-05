@@ -6,7 +6,10 @@ def test_base(test_alchemy_input_set):
     # Setup
     jstore = jobflow.SETTINGS.JOB_STORE
 
-    base_job_maker = BaseOpenmmMaker()
+    base_job_maker = BaseOpenmmMaker(
+        state_reporter_interval=0,
+        dcd_reporter_interval=0,
+    )
 
     base_job = base_job_maker.make(input_set=test_alchemy_input_set)
 
