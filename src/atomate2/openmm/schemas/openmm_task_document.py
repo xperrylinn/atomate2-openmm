@@ -51,7 +51,7 @@ class DCDReports(BaseModel):
 
 
 class PhysicalState(BaseModel):
-    box_vectors: Tuple[Tuple[float, float, float]] = Field(None, description="Box vectors for the calculation")
+    box_vectors: Tuple[Tuple[float, float, float], Tuple[float, float, float], Tuple[float, float, float]] = Field(None, description="Box vectors for the calculation")
     temperature: float = Field(None, description="Temperature for the calculation")
     step_size: float = Field(None, description="Step size for the calculation")
     friction_coefficient: float = Field(None, description="Friction coefficient for the calculation")
