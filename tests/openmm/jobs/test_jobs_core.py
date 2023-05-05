@@ -1,4 +1,4 @@
-def test_energy_minimization_maker(test_input_dir, test_output_dir):
+def test_energy_minimization_maker(test_alchemy_input_set_dir, test_output_dir):
     import jobflow
     from jobflow import run_locally
     from src.atomate2.openmm.jobs.core import EnergyMinimizationMaker
@@ -9,7 +9,7 @@ def test_energy_minimization_maker(test_input_dir, test_output_dir):
 
     # Create OpenMM set from directory for job input
     input_set = OpenMMSet.from_directory(
-        directory=test_input_dir,
+        directory=test_alchemy_input_set_dir,
         topology_file=OpenMMConstants.TOPOLOGY_PDD_FILE_NAME.value,
         state_file=OpenMMConstants.STATE_XML_FILE_NAME.value,
         system_file=OpenMMConstants.SYSTEM_XML_FILE_NAME.value,

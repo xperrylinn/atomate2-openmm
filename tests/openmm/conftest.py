@@ -14,21 +14,31 @@ def platform_props_for_test():
 
 
 @pytest.fixture(scope="session")
-def test_input_dir():
+def test_data_dir():
     import os
     from pathlib import Path
 
-    module_dir = Path(__file__).resolve().parent
-    test_dir = Path(os.path.join(module_dir, "../test_data/alchemy_input_set"))
+    module_dir = Path(__file__).resolve().parent.parent
+    test_data_dir = Path(os.path.join(module_dir, "./test_data")).resolve()
 
-    return test_dir.resolve()
+    return test_data_dir
 
 
 @pytest.fixture(scope="session")
-def test_input_set(test_input_dir):
+def test_alchemy_input_set_dir(test_data_dir):
+    import os
+    from pathlib import Path
+
+    alchemy_input_set_dir = Path(os.path.join(test_data_dir, "./alchemy_input_set")).resolve()
+
+    return alchemy_input_set_dir
+
+
+@pytest.fixture(scope="session")
+def test_alchemy_input_set(test_alchemy_input_set_dir):
 
     input_set = OpenMMSet.from_directory(
-        directory=test_input_dir,
+        directory=test_alchemy_input_set_dir,
         topology_file=OpenMMConstants.TOPOLOGY_PDD_FILE_NAME.value,
         state_file=OpenMMConstants.STATE_XML_FILE_NAME.value,
         system_file=OpenMMConstants.SYSTEM_XML_FILE_NAME.value,
@@ -39,11 +49,11 @@ def test_input_set(test_input_dir):
 
 
 @pytest.fixture
-def test_state_file(test_input_dir):
+def test_state_report_file(test_data_dir):
     import os
     from pathlib import Path
 
-    state_file = Path(os.path.join(test_input_dir, "state_xml"))
+    state_file = Path(os.path.join(test_data_dir, "./reporters/state.txt"))
 
     return state_file.resolve()
 
