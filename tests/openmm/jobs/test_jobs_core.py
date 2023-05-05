@@ -14,6 +14,7 @@ def test_energy_minimization_maker(test_input_dir, test_output_dir):
         state_file=OpenMMConstants.STATE_XML_FILE_NAME.value,
         system_file=OpenMMConstants.SYSTEM_XML_FILE_NAME.value,
         integrator_file=OpenMMConstants.INTEGRATOR_XML_FILE_NAME.value,
+        contents_file=OpenMMConstants.CONTENTS_JOSN_FILE_NAME.value,
     )
 
     # Instantiate a Maker and make a Job

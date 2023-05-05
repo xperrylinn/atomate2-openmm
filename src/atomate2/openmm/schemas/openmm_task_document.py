@@ -75,6 +75,15 @@ class PhysicalState(BaseModel):
         )
 
 
+class TaskDetails(BaseModel):
+    task_name: str = Field(None, description="Task name")
+    task_args: dict = Field(None, description="Task args")
+    task_kwargs: dict = Field(None, description="Task kwargs")
+    platform: str = Field(None, description="Platform")
+    platform_details: dict = Field(None, description="Platform details")
+    total_steps: int = Field(None, description="Total steps")
+
+
 class CalculationInput(BaseModel):
     input_set: OpenMMSet = Field(None, description="Input set for the calculation")
     physical_state: PhysicalState = Field(None, description="Physical state for the calculation")
@@ -92,7 +101,7 @@ class CalculationInput(BaseModel):
 
 
 class CalculationOutput(BaseModel):
-    input_set: OpenMMSet = Field(None, description="Input set for the calculation")
+    output_set: OpenMMSet = Field(None, description="Input set for the calculation")
     physical_state: PhysicalState = Field(None, description="Physical state for the calculation")
     state_reports: StateReports = Field(None, description="State reporter output")
     dcd_reports: DCDReports = Field(None, description="DCD reporter output")
@@ -117,20 +126,10 @@ class CalculationOutput(BaseModel):
         )
 
 
-class TaskDetails(BaseModel):
-    task_name: str = Field(None, description="Task name")
-    task_args: dict = Field(None, description="Task args")
-    task_kwargs: dict = Field(None, description="Task kwargs")
-    platform: str = Field(None, description="Platform")
-    platform_details: dict = Field(None, description="Platform details")
-    total_steps: int = Field(None, description="Total steps")
-
-
 class OpenMMTaskDocument(BaseModel):
     """Definition of the OpenMM task document."""
 
     output_dir: str = Field(None, description="The directory for this OpenMM task")
-    input_dir: OpenMMSet = Field()
     input: CalculationInput = Field(None, description="Input for the calculation")
     output: CalculationOutput = Field(None, description="Output for the calculation")
     details: TaskDetails = Field(None, description="Details about the task")

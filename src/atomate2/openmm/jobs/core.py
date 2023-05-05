@@ -287,8 +287,27 @@ class NVTMaker(BaseOpenmmMaker):
     steps: int = 1000000
     name: str = "nvt simulation"
     temperature: float = 298
-    pressure: float = 1
     frequency: int = 10
+
+    def _run_openmm(self, sim):    # parameters should be NVTMaker attrs
+        context = sim.context
+        system = context.getSystem()
+        assert (
+            system.usesPeriodicBoundaryConditions()
+        ), "system must use periodic boundary conditions for pressure equilibration."
+        thermostat_force_index = system.addForce(
+            AndersenThermostat(self.temperature * kelvin, pico * second * self.frequency)
+        )
+
+        # Re-init the context afte adding thermostat to System
+        context.reinitialize(preserveState=True)
+
+        # Run the simulation
+        sim.step(self.steps)
+
+        # Remove thermostat and update context
+        system.removeForce(thermostat_force_index)
+        context.reinitialize(preserveState=True)
 
     @job
     def make(
@@ -336,25 +355,6 @@ class NVTMaker(BaseOpenmmMaker):
         )
         sim.reporters.append(dcd_reporter)
 
-        # Add thermostat to system
-        context = sim.context
-        system = context.getSystem()
-        assert (
-            system.usesPeriodicBoundaryConditions()
-        ), "system must use periodic boundary conditions for pressure equilibration."
-        thermostat_force_index = system.addForce(
-            AndersenThermostat(self.temperature * kelvin, pico * second * self.frequency)
-        )
-
-        # Re-init the context afte adding thermostat to System
-        context.reinitialize(preserveState=True)
-
-        # Run the simulation
-        sim.step(self.steps)
-
-        # Remove thermostat and update context
-        system.removeForce(thermostat_force_index)
-        context.reinitialize(preserveState=True)
 
         # Get a fresh state object and update the OpenMMSet
         state = StateInput(

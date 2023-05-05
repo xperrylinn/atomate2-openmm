@@ -6,3 +6,4 @@ class OpenMMConstants(Enum):
     STATE_XML_FILE_NAME: str = "state_xml"
     SYSTEM_XML_FILE_NAME: str = "system_xml"
     INTEGRATOR_XML_FILE_NAME: str = "integrator_xml"
+    CONTENTS_JOSN_FILE_NAME: str = "contents_json"

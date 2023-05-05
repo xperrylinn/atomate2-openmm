@@ -5,11 +5,12 @@ dependencies:
   - python=3.8
   - pip
   - pytest
-  - pymatgen
+#  - pymatgen
   - openmm
   - openff-toolkit # pymatgen-io-openmm
   - MDAnalysis # pymatgen-io-openmm
   - atomate2
   - jobflow
   - pip:
-      - git+ssh://git@github.com/oriosnarcher/pymatgen-io-openmm.git
+      - git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
+      - git+https://github.com/orionarcher/pymatgen@input_set_fi

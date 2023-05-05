@@ -6,7 +6,13 @@ from src.atomate2.openmm.jobs.core import (
     AnnealMaker,
     NVTMaker,
 )
-from typing import List, Union, Optional, Dict
+from typing import (
+    List,
+    Union,
+    Optional,
+    Dict,
+    Union,
+)
 from pathlib import Path
 
 from dataclasses import dataclass
@@ -30,7 +36,18 @@ class ProductionMaker(Maker):
     anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker)
     nvt_maker: NVTMaker = Field(default_factory=NVTMaker)
 
-    def make(self, output_dir: str, *args, **kwargs):
+    def make(self, input_mol_spec: InputMoleculeSpec, output_dir: Optional[Union[str, Path]]):
+        """
+
+        Parameters
+        ----------
+        output_dir : Optional[Union[str, Path]]
+            File path to directory for writing simulation output files (e.g. trajectory and state files)
+
+        Returns
+        -------
+
+        """
 
         openmm_set_gen = self.input_maker.make(*args, **kwargs)
 
@@ -44,7 +61,6 @@ class ProductionMaker(Maker):
 
         my_flow = Flow(
             [
-                openmm_set_gen,
                 energy_job,
                 pressure_job,
                 anneal_job,

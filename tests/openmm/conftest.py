@@ -1,3 +1,5 @@
+from pymatgen.io.openmm.sets import OpenMMSet
+from src.atomate2.openmm.constants import OpenMMConstants
 import pytest
 
 
@@ -20,6 +22,27 @@ def test_input_dir():
     test_dir = Path(os.path.join(module_dir, "../test_data/alchemy_input_set"))
 
     return test_dir.resolve()
+
+
+@pytest.fixture(scope="session")
+def test_input_set(test_input_dir):
+    import os
+    from pathlib import Path
+
+    module_dir = Path(__file__).resolve().parent
+    test_dir = Path(os.path.join(module_dir, "../test_data/alchemy_input_set"))
+
+    test_dir = test_dir.resolve()
+
+    input_set = OpenMMSet.from_directory(
+        directory=test_dir,
+        topology_file=OpenMMConstants.TOPOLOGY_PDD_FILE_NAME.value,
+        state_file=OpenMMConstants.STATE_XML_FILE_NAME.value,
+        system_file=OpenMMConstants.SYSTEM_XML_FILE_NAME.value,
+        integrator_file=OpenMMConstants.INTEGRATOR_XML_FILE_NAME.value,
+        contents_file=OpenMMConstants.CONTENTS_JOSN_FILE_NAME.value,
+    )
+    return input_set
 
 
 @pytest.fixture(scope="function")
