@@ -169,7 +169,7 @@ class BaseOpenmmMaker(Maker):
     def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, output_dir: Union[str, Path]):
 
         # Create an output OpenMMSet for CalculationOutput
-        output_set = copy.deepcopy(input_set) # comment out until - https://github.com/materialsproject/pymatgen/pull/2973/files
+        output_set = copy.deepcopy(input_set)   # comment out until - https://github.com/materialsproject/pymatgen/pull/2973/files
         state = StateInput(
             context.getState(
                 getPositions=True,
@@ -182,6 +182,9 @@ class BaseOpenmmMaker(Maker):
         # Grab StateDataReporter and DCDReporter if present on simulation reporters
         state_reports, dcd_reports = None, None
         if self.state_reporter_interval > 0:
+            # todo: what happens when state_reporter_interval > 0, but nothing has been
+            # reported, for example, Simulation.step was not called. Look at TaskDetails
+            # for logic flow?
             state_file_name = os.path.join(output_dir, "state_xml")
             state_reports = StateReports.from_state_file(state_file_name)
         if self.dcd_reporter_interval > 0:
