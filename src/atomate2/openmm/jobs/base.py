@@ -1,36 +1,17 @@
-from typing import Optional, Union, Callable
+from typing import Callable
 from jobflow import job, Maker, Job
-from dataclasses import (
-    dataclass,
-    field,
-)
+from dataclasses import dataclass, field
 from pathlib import Path
 from pymatgen.io.openmm.sets import OpenMMSet
 from pymatgen.io.openmm.inputs import StateInput
-from src.atomate2.openmm.schemas.openmm_task_document import (
-    OpenMMTaskDocument,
-    CalculationInput,
-    CalculationOutput,
-    PhysicalState,
-    TaskDetails,
-    StateReports,
-    DCDReports,
-)
-from openmm import (
-    Platform,
-    Context,
-
-)
-from typing import (
-    Union,
-    Optional,
-    Dict,
-)
-from openmm.app import (
-    DCDReporter,
-    StateDataReporter,
-    PDBReporter,
-)
+from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+from src.atomate2.openmm.schemas.physical_state import PhysicalState
+from src.atomate2.openmm.schemas.task_details import TaskDetails
+from src.atomate2.openmm.schemas.dcd_reports import DCDReports
+from src.atomate2.openmm.schemas.state_reports import StateReports
+from openmm import Platform, Context
+from typing import Union, Optional
+from openmm.app import DCDReporter, StateDataReporter, PDBReporter
 from openmm.app.simulation import Simulation
 from tempfile import TemporaryDirectory
 import copy
