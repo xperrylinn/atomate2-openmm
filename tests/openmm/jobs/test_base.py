@@ -1,5 +1,7 @@
 def test_base(test_alchemy_input_set):
     from src.atomate2.openmm.jobs.base import BaseOpenmmMaker
+    from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+    from openmm.app.simulation import Simulation
     from tempfile import TemporaryDirectory
     import jobflow
 
@@ -20,13 +22,15 @@ def test_base(test_alchemy_input_set):
             input_set=test_alchemy_input_set,
             output_dir=temp_dir,
         )
+        assert isinstance(sim, Simulation)
 
         # Validate _setup_base_openmm_task
-        base_job_maker._close_base_openmm_task(
+        task_doc = base_job_maker._close_base_openmm_task(
             input_set=test_alchemy_input_set,
             context=sim.context,
             output_dir=temp_dir,
         )
+        assert isinstance(task_doc, OpenMMTaskDocument)
 
     # Validate raising of NotImplementedError
     try:
