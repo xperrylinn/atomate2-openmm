@@ -1,5 +1,5 @@
 def test_base(test_alchemy_input_set):
-    from src.atomate2.openmm.jobs.base import BaseOpenmmMaker
+    from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenmmMaker
     from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
     from openmm.app.simulation import Simulation
     from tempfile import TemporaryDirectory

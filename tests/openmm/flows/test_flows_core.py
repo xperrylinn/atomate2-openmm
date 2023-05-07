@@ -5,10 +5,10 @@ from src.atomate2.openmm.jobs.core import (
     OpenMMSetFromDirectory,
     OpenMMSetFromInputMoleculeSpec,
     EnergyMinimizationMaker,
-    NPTMaker,
     AnnealMaker,
-    NVTMaker,
 )
+from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
+from src.atomate2.openmm.jobs.npt_make import NPTMaker
 
 from pymatgen.io.openmm.schema import InputMoleculeSpec
 
