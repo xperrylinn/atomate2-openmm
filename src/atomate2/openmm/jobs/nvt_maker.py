@@ -39,7 +39,7 @@ class NVTMaker(BaseOpenmmMaker):
                 "steps"=self.steps,
                 "temperature"=self.temperature,
                 "frequency"=self.frequency,
-            }
+            },
         )
 
         return task_details
