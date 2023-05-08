@@ -11,6 +11,7 @@ from src.atomate2.openmm.schemas.dcd_reports import DCDReports
 from src.atomate2.openmm.schemas.state_reports import StateReports
 from src.atomate2.openmm.schemas.calculation_input import CalculationInput
 from src.atomate2.openmm.schemas.calculation_output import CalculationOutput
+from src.atomate2.openmm.constants import OpenMMConstants
 from openmm import Platform, Context
 from typing import Union, Optional
 from openmm.app import DCDReporter, StateDataReporter, PDBReporter
@@ -26,7 +27,7 @@ def openmm_job(method: Callable):
     Parameters
     ----------
     method : callable
-        A BaseOpenmmMaker.make method. This should not be specified directly and is
+        A BaseOpenMMMaker.make method. This should not be specified directly and is
         implied by the decorator.
 
     Returns
@@ -39,7 +40,7 @@ def openmm_job(method: Callable):
 
 
 @dataclass
-class BaseOpenmmMaker(Maker):
+class BaseOpenMMMaker(Maker):
     """
     platform_kwargs : Optional[dict]
         platform and platform_properties passed to OpenMMSet.get_simulation.
@@ -65,12 +66,17 @@ class BaseOpenmmMaker(Maker):
             output_dir: Optional[Union[str, Path]] = None,
     ) -> Job:
         """
-        Run an Openmm calculation.
+        OpenMM Job Maker where each Job consist of three major steps:
 
-        this should mirror the structure of BaseVaspMaker.make
-        it should include everything needed to setup and teardown and openmm
-        simulation but it should offload the details to its children
-        (e.g. NPTMaker, NVTMaker, etc.)
+        1. Setup an OpenMM Simulation - _setup_base_openmm_task(...)
+        2. Run an OpenMM Simulation based task - _run_openmm(...)
+        3. Close the OpenMM task - _close_base_openmm_task(...)
+
+        The setup and closing logic should be broadly applicable to all OpenMM Jobs. The specifics
+        of each OpenMM Job is to be defined by classes that are derived from BaseOpenMMMaker by
+        implementing the _run_openmm(...) method. If custom setup and closing log is desired, this
+        is achieved by BaseOpenMMMaker dervied classes overriding _setup_base_openmm_task(...) and
+        _close_base_openmm_task(...) methods.
 
         Parameters
         ----------
@@ -100,7 +106,8 @@ class BaseOpenmmMaker(Maker):
 
     def _setup_base_openmm_task(self, input_set: OpenMMSet, output_dir: Union[str, Path]) -> Simulation:
         """
-        Initializes an OpenMM Simulation. Dervied classes define the _run_openmm with simulation task details.
+        Initializes an OpenMM Simulation. Classes derived from BaseOpenMMMaker define the _run_openmm method
+        and implement the specifics of an OpenMM task.
 
         Parameters
         ----------
@@ -114,7 +121,6 @@ class BaseOpenmmMaker(Maker):
         -------
         sim : Simulation
             OpenMM Simulation from OpenMMSet.
-
         """
 
         # Setup compute platform and get a Simulation
@@ -130,14 +136,14 @@ class BaseOpenmmMaker(Maker):
 
         # Add reporters
         if self.dcd_reporter_interval > 0:
-            dcd_file_name = os.path.join(output_dir, "trajectory_dcd")
+            dcd_file_name = os.path.join(output_dir, OpenMMConstants.TRAJECTORY_DCD_FILE_NAME.value)
             dcd_reporter = DCDReporter(
                 file=dcd_file_name,
                 reportInterval=self.dcd_reporter_interval,
             )
             sim.reporters.append(dcd_reporter)
         if self.state_reporter_interval > 0:
-            state_file_name = os.path.join(output_dir, "state_csv")
+            state_file_name = os.path.join(output_dir, OpenMMConstants.STATE_REPORT_CSV_FILE_NAME.value)
             state_reporter = StateDataReporter(
                 file=state_file_name,
                 reportInterval=self.state_reporter_interval,
@@ -153,11 +159,24 @@ class BaseOpenmmMaker(Maker):
 
         return sim
 
-    def _run_openmm(self, *args, **kwargs) -> TaskDetails:
+    def _run_openmm(self, simulation: Simulation) -> TaskDetails:
         """
-        Abstract method for holding the logic to be ran by each job.
+        Abstract method for holding the task specific logic to be ran by each job. Setting up of the Simulation
+        is handled by _setup_base_openmm_task which passes a Simulation object to this method. This method will
+        run an OpenMM task and return a TaskDetails object which is then passed to _close_base_openmm_task that
+        handles closing the simulation.
+
+        Parameters
+        ----------
+        simulation : Simulation
+            OpenMM Simulation constructed from an OpenMMSet and possibly state and trajectory reporters added.
+
+        Returns
+        -------
+        TaskDetails
+
         """
-        raise NotImplementedError("_run_openmm should be implemented by each class that derives from BaseOpenmmMaker.")
+        raise NotImplementedError("_run_openmm should be implemented by each class that derives from BaseOpenMMMaker.")
 
     def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
 

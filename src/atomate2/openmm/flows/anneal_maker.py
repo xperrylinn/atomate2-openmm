@@ -1,4 +1,4 @@
-from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenmmMaker
+from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from typing import Union, Optional, Dict, Tuple
 from pymatgen.io.openmm.sets import OpenMMSet
 from openmm import Platform
@@ -15,7 +15,7 @@ from pymatgen.io.openmm.inputs import StateInput
 """
 
 @dataclass
-class AnnealMaker(BaseOpenmmMaker):
+class AnnealMaker(BaseOpenMMMaker):
     """
     steps : Union[Tuple[int, int, int], int]
 

@@ -49,8 +49,6 @@ class ProductionMaker(Maker):
 
         """
 
-        openmm_set_gen = self.input_maker.make(*args, **kwargs)
-
         energy_job = self.energy_maker.make(input_set=openmm_set_gen.output, output_dir=output_dir)
 
         pressure_job = self.npt_maker.make(input_set=energy_job.output, output_dir=output_dir)

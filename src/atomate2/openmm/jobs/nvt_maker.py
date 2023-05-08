@@ -1,4 +1,4 @@
-from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenmmMaker
+from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from src.atomate2.openmm.schemas.task_details import TaskDetails
 from openmm.openmm import AndersenThermostat
 from dataclasses import dataclass
@@ -6,13 +6,13 @@ from openmm.unit import kelvin, pico, second
 
 
 @dataclass
-class NVTMaker(BaseOpenmmMaker):
+class NVTMaker(BaseOpenMMMaker):
     steps: int = 1000000
     name: str = "nvt simulation"
     temperature: float = 298
     frequency: int = 10
 
-    def _run_openmm(self, sim):    # parameters should be NVTMaker attrs
+    def _run_openmm(self, sim):
         context = sim.context
         system = context.getSystem()
         assert (

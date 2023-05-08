@@ -1,4 +1,4 @@
-from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenmmMaker
+from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from src.atomate2.openmm.schemas.task_details import TaskDetails
 from openmm.openmm import MonteCarloBarostat
 from dataclasses import dataclass
@@ -6,7 +6,7 @@ from openmm.unit import kelvin, atmosphere
 
 
 @dataclass
-class NPTMaker(BaseOpenmmMaker):
+class NPTMaker(BaseOpenMMMaker):
     steps: int = 1000000
     name: str = "npt simulation"
     temperature: float = 298

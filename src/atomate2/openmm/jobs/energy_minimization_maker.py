@@ -1,10 +1,10 @@
-from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenmmMaker
+from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from src.atomate2.openmm.schemas.task_details import TaskDetails
 from dataclasses import dataclass
 
 
 @dataclass
-class EnergyMinimizationMaker(BaseOpenmmMaker):
+class EnergyMinimizationMaker(BaseOpenMMMaker):
     name: str = "energy minimization"
     # TODO: add default kwargs for Simulation.minimizeEnergy?
     # tolerance
