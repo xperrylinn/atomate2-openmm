@@ -3,6 +3,7 @@ def test_production_maker(alchemy_input_set, job_store):
     from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
     from src.atomate2.openmm.jobs.maker_npt import NPTMaker
     from src.atomate2.openmm.flows.production_maker import ProductionMaker
+    from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
     from jobflow import run_locally
 
     production_maker = ProductionMaker(
@@ -14,3 +15,6 @@ def test_production_maker(alchemy_input_set, job_store):
     production_flow = production_maker.make(input_set=alchemy_input_set)
 
     responses = run_locally(flow=production_flow, ensure_success=True)
+
+    for job_response in responses.values():
+        assert isinstance(job_response[1].output, OpenMMTaskDocument)

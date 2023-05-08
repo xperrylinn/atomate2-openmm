@@ -21,7 +21,7 @@ class ProductionMaker(Maker):
     # anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker)
     nvt_maker: NVTMaker = Field(default_factory=NVTMaker)
 
-    def make(self, input_set: OpenMMSet, output_dir: Optional[Union[str, Path]]=None):
+    def make(self, input_set: OpenMMSet, output_dir: Optional[Union[str, Path]] = None):
         """
 
         Parameters
