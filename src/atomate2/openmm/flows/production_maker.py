@@ -1,4 +1,4 @@
-from src.atomate2.openmm.jobs.core import (
+from src.atomate2.openmm.jobs.openmm_set_from_input_mol_spec import (
     OpenMMSetFromInputMoleculeSpec,
     OpenMMSetFromDirectory,
     EnergyMinimizationMaker,

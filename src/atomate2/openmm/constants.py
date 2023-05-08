@@ -7,3 +7,12 @@ class OpenMMConstants(Enum):
     SYSTEM_XML_FILE_NAME: str = "system_xml"
     INTEGRATOR_XML_FILE_NAME: str = "integrator_xml"
     CONTENTS_JOSN_FILE_NAME: str = "contents_json"
+    STATE_REPORT_SCHEMA = [
+        "steps",
+        "potential_energy",
+        "kinetic_energy",
+        "total_energy",
+        "temperature",
+        "volume",
+        "density"
+    ]

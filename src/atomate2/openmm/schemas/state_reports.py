@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Union
+from src.atomate2.openmm.constants import OpenMMConstants
 import numpy as np
 import pathlib
 import logging
@@ -21,14 +22,10 @@ class StateReports(BaseModel):
 
         if len(data) == 0:
             logging.warning(f"The loaded state file: {state_file}, was empty")
+            return StateReports()
         else:
-            # Define the order of attributes in the data
-            attributes = ['steps', 'potential_energy', 'kinetic_energy', 'total_energy',
-                          'temperature', 'volume', 'density']
-
             # Extract the data columns and set the corresponding class fields
             attributes = {
-                attribute: data[:, i].tolist() for i, attribute in enumerate(attributes)
+                attribute: data[:, i].tolist() for i, attribute in enumerate(OpenMMConstants.STATE_REPORT_SCHEMA.value)
             }
-
-        return StateReports(**attributes)
+            return StateReports(**attributes)

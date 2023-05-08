@@ -162,7 +162,7 @@ class BaseOpenmmMaker(Maker):
     def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
 
         # Create an output OpenMMSet for CalculationOutput
-        output_set = copy.deepcopy(input_set)   # comment out until - https://github.com/materialsproject/pymatgen/pull/2973/files
+        output_set = copy.deepcopy(input_set)
         state = StateInput(
             context.getState(
                 getPositions=True,
