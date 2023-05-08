@@ -1,40 +1,41 @@
-def test_base(test_alchemy_input_set):
+def test_base_openmm_maker(alchemy_input_set, job_store, task_details, caplog):
     from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenmmMaker
     from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
     from openmm.app.simulation import Simulation
     from tempfile import TemporaryDirectory
-    import jobflow
-
-    # Setup
-    jstore = jobflow.SETTINGS.JOB_STORE
+    from jobflow import run_locally
 
     base_job_maker = BaseOpenmmMaker(
         state_reporter_interval=0,
         dcd_reporter_interval=0,
     )
 
-    base_job = base_job_maker.make(input_set=test_alchemy_input_set)
+    base_job = base_job_maker.make(input_set=alchemy_input_set)
 
     with TemporaryDirectory() as temp_dir:
 
         # Validate _setup_base_openmm_task
         sim = base_job_maker._setup_base_openmm_task(
-            input_set=test_alchemy_input_set,
+            input_set=alchemy_input_set,
             output_dir=temp_dir,
         )
         assert isinstance(sim, Simulation)
 
         # Validate _setup_base_openmm_task
         task_doc = base_job_maker._close_base_openmm_task(
-            input_set=test_alchemy_input_set,
+            input_set=alchemy_input_set,
             context=sim.context,
+            task_details=task_details,
             output_dir=temp_dir,
         )
         assert isinstance(task_doc, OpenMMTaskDocument)
 
-    # Validate raising of NotImplementedError
+    # Validate raising of RuntimeError raised because of NotImplementedError
     try:
-        base_job.run(store=jstore)
+        run_locally(base_job, store=job_store, ensure_success=True)
         assert False
-    except NotImplementedError:
+    except RuntimeError:
         assert True
+
+    # Validate NotImplementedError in captured logs
+    assert "NotImplementedError" in caplog.record_tuples[2][2]

@@ -32,14 +32,14 @@ class NVTMaker(BaseOpenmmMaker):
         system.removeForce(thermostat_force_index)
         context.reinitialize(preserveState=True)
 
-        # TODO: return TaskDetails
         task_details = TaskDetails(
             task_name=self.name,
             task_kwargs={
-                "steps"=self.steps,
-                "temperature"=self.temperature,
-                "frequency"=self.frequency,
+                "steps": self.steps,
+                "temperature": self.temperature,
+                "frequency": self.frequency,
             },
+            platform_kwargs=self.platform_kwargs,
         )
 
         return task_details

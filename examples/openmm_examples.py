@@ -16,8 +16,8 @@ argument 2: the output directory
 
 
 wd = pathlib.Path.cwd()
-input_dir = pathlib.Path(sys.argv[1])
-output_dir = pathlib.Path(sys.argv[2])
+# input_dir = pathlib.Path(sys.argv[1])
+# output_dir = pathlib.Path(sys.argv[2])
 
 target_paths = [path for path in input_dir.iterdir()]
 # assert len(target_paths) == 1, "there must be exactly 1 job to run"

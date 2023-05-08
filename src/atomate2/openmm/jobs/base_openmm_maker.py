@@ -9,6 +9,8 @@ from src.atomate2.openmm.schemas.physical_state import PhysicalState
 from src.atomate2.openmm.schemas.task_details import TaskDetails
 from src.atomate2.openmm.schemas.dcd_reports import DCDReports
 from src.atomate2.openmm.schemas.state_reports import StateReports
+from src.atomate2.openmm.schemas.calculation_input import CalculationInput
+from src.atomate2.openmm.schemas.calculation_output import CalculationOutput
 from openmm import Platform, Context
 from typing import Union, Optional
 from openmm.app import DCDReporter, StateDataReporter, PDBReporter
@@ -46,6 +48,9 @@ class BaseOpenmmMaker(Maker):
         DCD reporter interval. If DCD reporter is not desired, set keyword argument to 0.
     state_reporter_interval : Optional[int]
         State reporter interval. If state reporter is not desired, set keyword argument to 0.
+    wrap_dcd : bool
+        Set to True to turn on periodic boundary conditions for the trajectory file or False
+        to turn off periodic boundary conditions.
     """
     name: str = "base openmm job"
     platform_kwargs: Optional[dict] = field(default_factory=dict)
@@ -86,10 +91,10 @@ class BaseOpenmmMaker(Maker):
         sim = self._setup_base_openmm_task(input_set, output_dir)
 
         # Run the simulation
-        self._run_openmm(sim)
+        task_details = self._run_openmm(sim)
 
         # Close the simulation
-        input_set = self._close_base_openmm_task(input_set, sim.context, output_dir)
+        input_set = self._close_base_openmm_task(input_set, sim.context, task_details, output_dir)
 
         return input_set
 
@@ -132,10 +137,17 @@ class BaseOpenmmMaker(Maker):
             )
             sim.reporters.append(dcd_reporter)
         if self.state_reporter_interval > 0:
-            state_file_name = os.path.join(output_dir, "state_xml")
+            state_file_name = os.path.join(output_dir, "state_csv")
             state_reporter = StateDataReporter(
                 file=state_file_name,
                 reportInterval=self.state_reporter_interval,
+                step=True,
+                potentialEnergy=True,
+                kineticEnergy=True,
+                totalEnergy=True,
+                temperature=True,
+                volume=True,
+                density=True,
             )
             sim.reporters.append(state_reporter)
 
@@ -147,7 +159,7 @@ class BaseOpenmmMaker(Maker):
         """
         raise NotImplementedError("_run_openmm should be implemented by each class that derives from BaseOpenmmMaker.")
 
-    def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, output_dir: Union[str, Path]):
+    def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
 
         # Create an output OpenMMSet for CalculationOutput
         output_set = copy.deepcopy(input_set)   # comment out until - https://github.com/materialsproject/pymatgen/pull/2973/files
@@ -166,7 +178,7 @@ class BaseOpenmmMaker(Maker):
             # todo: what happens when state_reporter_interval > 0, but nothing has been
             # reported, for example, Simulation.step was not called. Look at TaskDetails
             # for logic flow?
-            state_file_name = os.path.join(output_dir, "state_xml")
+            state_file_name = os.path.join(output_dir, "state_csv")
             state_reports = StateReports.from_state_file(state_file_name)
         if self.dcd_reporter_interval > 0:
             dcd_file_name = os.path.join(output_dir, "trajectory_dcd")
@@ -186,6 +198,7 @@ class BaseOpenmmMaker(Maker):
             physical_state=PhysicalState.from_input_set(output_set),
             state_reports=state_reports,
             dcd_reports=dcd_reports,
+            task_details=task_details,
         )
 
         task_doc = OpenMMTaskDocument(
@@ -193,6 +206,7 @@ class BaseOpenmmMaker(Maker):
             physical_state=PhysicalState.from_input_set(output_set),
             calculation_input=calculation_input,
             calculation_output=calculation_output,
+
         )
 
         return task_doc
