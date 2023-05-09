@@ -10,7 +10,7 @@ import os
 
 
 # Define file path to input set of files
-input_file_path = "../tests/test_data/alchemy_input_set"
+input_file_path = "./tests/test_data/alchemy_input_set"
 input_set = OpenMMSet.from_directory(
     directory=input_file_path,
     topology_file="topology_pdb",
@@ -24,7 +24,10 @@ input_set = OpenMMSet.from_directory(
 production_maker = ProductionMaker(
     energy_maker=EnergyMinimizationMaker(),
     npt_maker=NPTMaker(steps=100),
-    nvt_maker=NVTMaker(steps=100),
+    nvt_maker=NVTMaker(
+        steps=100,
+        state_reporter_interval=10,
+    ),
 )
 production_flow = production_maker.make(input_set=input_set)
 
