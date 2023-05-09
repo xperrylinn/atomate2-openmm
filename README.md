@@ -5,12 +5,10 @@ An add-on package to atomate2 for OpenMM
 
 # Installation
 
-This package is distributed using conda-forge. To install the package run the following command:
-  
-`conda install -c conda-forge atomate2-openmm`
-WIP
+This package will eventually be distributed using conda-forge. For now follow see the development 
+environmentvsection.
 
-# Setup for development
+# Development Environment Setup
 
 ## Python Environment Setup
 
@@ -22,7 +20,8 @@ A Python3.8 environment setup using conda according to the steps below:
 
 ## Environment variables:
 
-- JOBFLOW_CONFIG_FILE=file/path/to/jobflow.yaml
+- ATLAS_USERNAME: <username for MongoDB Atlas>
+- ATLAS_PASSWORD: <database password. See database access page.>
 
 ## Running Test
 

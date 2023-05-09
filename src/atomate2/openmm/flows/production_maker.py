@@ -15,11 +15,11 @@ class ProductionMaker(Maker):
     Class for running
     """
     name: str = "production"
-
-    energy_maker: EnergyMinimizationMaker = Field(default_factory=EnergyMinimizationMaker)
-    npt_maker: NPTMaker = Field(default_factory=NPTMaker)
+    # TODO: default factory not working for some reason
+    energy_maker: EnergyMinimizationMaker = Field(default_factory=lambda: EnergyMinimizationMaker())
+    npt_maker: NPTMaker = Field(default_factory=lambda: NPTMaker())
     # anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker)
-    nvt_maker: NVTMaker = Field(default_factory=NVTMaker)
+    nvt_maker: NVTMaker = Field(default_factory=lambda: NVTMaker())
 
     def make(self, input_set: OpenMMSet, output_dir: Optional[Union[str, Path]] = None):
         """
