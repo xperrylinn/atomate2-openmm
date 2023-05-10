@@ -1,6 +1,7 @@
 from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
 from src.atomate2.openmm.jobs.npt_maker import NPTMaker
 from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
+from src.atomate2.openmm.flows.anneal_maker import AnnealMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from typing import Optional, Union
 from pathlib import Path
@@ -18,7 +19,7 @@ class ProductionMaker(Maker):
     # TODO: default factory not working for some reason
     energy_maker: EnergyMinimizationMaker = Field(default_factory=lambda: EnergyMinimizationMaker())
     npt_maker: NPTMaker = Field(default_factory=lambda: NPTMaker())
-    # anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker)
+    anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker())
     nvt_maker: NVTMaker = Field(default_factory=lambda: NVTMaker())
 
     def make(self, input_set: OpenMMSet, output_dir: Optional[Union[str, Path]] = None):
@@ -46,7 +47,10 @@ class ProductionMaker(Maker):
             output_dir=output_dir
         )
 
-        # anneal_job = self.anneal_maker.make(input_set=pressure_job.output, output_dir=output_dir)
+        anneal_job = self.anneal_maker.make(
+            input_set=pressure_job.output,
+            output_dir=output_dir
+        )
 
         nvt_job = self.nvt_maker.make(
             input_set=pressure_job.output.calculation_output.output_set,
@@ -57,7 +61,7 @@ class ProductionMaker(Maker):
             [
                 energy_job,
                 pressure_job,
-                # anneal_job,
+                anneal_job,
                 nvt_job,
             ],
             output={"log": nvt_job},
