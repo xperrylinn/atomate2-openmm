@@ -2,8 +2,8 @@ from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from typing import Union, Optional, Dict, Tuple
 from pymatgen.io.openmm.sets import OpenMMSet
 from openmm import Platform
-from dataclasses import dataclass
-from jobflow import job, Flow
+from dataclasses import dataclass, field
+from jobflow import job, Flow, Maker
 from openmm.app import DCDReporter
 from openmm.unit import kelvin
 import os
@@ -14,21 +14,17 @@ from pymatgen.io.openmm.inputs import StateInput
 from src.atomate2.openmm.jobs.npt_maker import NPTMaker
 from src.atomate2.openmm.jobs.temperature_maker import TempChangeMaker
 
-"""
-    TODO: Refactor into a Flow
-"""
-
 @dataclass
-class AnnealMaker(BaseOpenMMMaker):
+class AnnealMaker(Maker):
     """
     steps : Union[Tuple[int, int, int], int]
 
     """
 
     name: str = "anneal"
-    raise_temp_maker: TempChangeMaker = Field(default_factory=lambda: TempChangeMaker(final_temp=400))
-    npt_maker: NPTMaker = Field(default_factory=lambda: NPTMaker())
-    lower_temp_maker: TempChangeMaker = Field(default_factory=lambda: TempChangeMaker())
+    raise_temp_maker: TempChangeMaker = field(default_factory=lambda: TempChangeMaker(final_temp=400))
+    npt_maker: NPTMaker = field(default_factory=NPTMaker)
+    lower_temp_maker: TempChangeMaker = field(default_factory=TempChangeMaker)
 
     @staticmethod
     def from_temps_and_steps(
@@ -65,12 +61,10 @@ class AnnealMaker(BaseOpenMMMaker):
             lower_temp_maker=lower_temp_maker,
         )
 
-
-    @job
     def make(
             self,
             input_set: OpenMMSet,
-            output_dir: str,
+            output_dir: Optional[str] = None,
             platform: Optional[Union[str, Platform]] = "CPU",
             platform_properties: Optional[Dict[str, str]] = None,
     ):
@@ -102,14 +96,12 @@ class AnnealMaker(BaseOpenMMMaker):
             output_dir=output_dir,
         )
         npt_job = self.npt_maker.make(
-            input_set=input_set,
+            input_set=raise_temp_job.output.calculation_output.output_set,
             output_dir=output_dir,
         )
         lower_temp_job = self.lower_temp_maker.make(
-            input_set=input_set,
+            input_set=npt_job.output.calculation_output.output_set,
             output_dir=output_dir,
         )
 
-        flow = Flow([raise_temp_job, npt_job, lower_temp_job])
-
-        return flow
+        return Flow([raise_temp_job, npt_job, lower_temp_job], output=lower_temp_job.output)

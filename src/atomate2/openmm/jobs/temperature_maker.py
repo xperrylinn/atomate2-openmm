@@ -1,7 +1,7 @@
 from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from src.atomate2.openmm.schemas.task_details import TaskDetails
 from openmm.openmm import MonteCarloBarostat
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from openmm.unit import kelvin, atmosphere
 import numpy as np
 
@@ -28,6 +28,8 @@ class TempChangeMaker(BaseOpenMMMaker):
         ):
             integrator.setTemperature(temp * kelvin)
             sim.step(self.steps // self.temp_steps)
+
+        task_details = asdict()
 
         task_details = TaskDetails(
             task_name=self.name,
