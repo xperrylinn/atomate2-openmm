@@ -3,12 +3,16 @@ from typing import Union, Optional, Dict, Tuple
 from pymatgen.io.openmm.sets import OpenMMSet
 from openmm import Platform
 from dataclasses import dataclass
-from jobflow import job
+from jobflow import job, Flow
 from openmm.app import DCDReporter
 from openmm.unit import kelvin
 import os
 import numpy as np
+from pydantic import Field
 from pymatgen.io.openmm.inputs import StateInput
+
+from src.atomate2.openmm.jobs.npt_maker import NPTMaker
+from src.atomate2.openmm.jobs.temperature_maker import TempChangeMaker
 
 """
     TODO: Refactor into a Flow
@@ -21,10 +25,46 @@ class AnnealMaker(BaseOpenMMMaker):
 
     """
 
-    steps: Union[Tuple[int, int, int], int] = (500000, 1000000, 500000)
-    name: str = "anneal simulation"
-    temperatures: Union[Tuple[int, int, int], int] = (298, 400, 298)
-    temp_steps: int = 100
+    name: str = "anneal"
+    raise_temp_maker: TempChangeMaker = Field(default_factory=lambda: TempChangeMaker(final_temp=400))
+    npt_maker: NPTMaker = Field(default_factory=lambda: NPTMaker())
+    lower_temp_maker: TempChangeMaker = Field(default_factory=lambda: TempChangeMaker())
+
+    @staticmethod
+    def from_temps_and_steps(
+            anneal_temp: int = 400,
+            final_temp: int = 298,
+            steps: Union[int, Tuple[int, int, int]] = 1500000,
+            temp_steps: Union[int, Tuple[int, int, int]] = 100,
+            names: Tuple[str, str, str] = ("raise temp", "hold temp", "lower temp")
+    ):
+        if isinstance(steps, int):
+            steps = (steps // 3, steps // 3, steps - 2 * (steps // 3))
+        if isinstance(temp_steps, int):
+            temp_steps = (temp_steps, temp_steps, temp_steps)
+
+        raise_temp_maker = TempChangeMaker(
+            steps=steps[0],
+            name=names[0],
+            final_temp=anneal_temp,
+            temp_steps=temp_steps[0]
+        )
+        npt_maker = NPTMaker(
+            steps=steps[1],
+            name=names[1],
+        )
+        lower_temp_maker = TempChangeMaker(
+            steps=steps[2],
+            name=names[2],
+            final_temp=final_temp,
+            temp_steps=temp_steps[2]
+        )
+        return AnnealMaker(
+            raise_temp_maker=raise_temp_maker,
+            npt_maker=npt_maker,
+            lower_temp_maker=lower_temp_maker,
+        )
+
 
     @job
     def make(
@@ -57,68 +97,19 @@ class AnnealMaker(BaseOpenMMMaker):
         Job
             A OpenMM job containing one npt run.
         """
-        # Set compute platform
-        platform = Platform.getPlatformByName(platform)
-
-        # Get a fresh Simulation from OpenMMSet input argument
-        sim = input_set.get_simulation(
-            platform=platform,
-            platformProperties=platform_properties
+        raise_temp_job = self.raise_temp_maker.make(
+            input_set=input_set,
+            output_dir=output_dir,
+        )
+        npt_job = self.npt_maker.make(
+            input_set=input_set,
+            output_dir=output_dir,
+        )
+        lower_temp_job = self.lower_temp_maker.make(
+            input_set=input_set,
+            output_dir=output_dir,
         )
 
-        # Add DCD reporter
-        dcd_reporter = DCDReporter(
-            file=os.path.join(output_dir, "anneal_trajecotry.dcd"),
-            reportInterval=10,
-        )
-        sim.reporters.append(dcd_reporter)
+        flow = Flow([raise_temp_job, npt_job, lower_temp_job])
 
-        context = sim.context
-        integrator = sim.context.getIntegrator()
-        old_temperature = integrator.getTemperature()
-
-        # Type checking to assemble annealing step count and temperatures for heating, holding, cooling
-        if isinstance(self.temperatures, int):
-            anneal_temps = [old_temperature, self.temperatures, old_temperature]
-        else:
-            anneal_temps = self.temperatures
-        if isinstance(self.temp_steps, int):
-            anneal_steps = [self.temp_steps] * 3
-        else:
-            anneal_steps = self.temp_steps
-
-        # Heating temperature
-        temp_step_size = abs(anneal_temps[0] * kelvin - old_temperature) / anneal_steps[0]
-        for temp in np.arange(
-                old_temperature + temp_step_size,
-                anneal_temps[0] * kelvin + temp_step_size,
-                temp_step_size,
-        ):
-            integrator.setTemperature(temp * kelvin)
-            sim.step(self.steps[0] // anneal_steps[0])
-
-        # Holding
-        temp_step_size = anneal_steps[1]
-        sim.step(self.steps[1])
-
-        # Cooling temperature
-        temp_step_size = abs(anneal_temps[1] * kelvin - anneal_temps[2] * kelvin) / anneal_steps[2]
-        for temp in np.arange(
-                anneal_temps[1] * kelvin - temp_step_size,
-                anneal_temps[2] * kelvin - temp_step_size + temp_step_size,
-                -1 * temp_step_size,
-        ):
-            integrator.setTemperature(temp * kelvin)
-            sim.step(self.steps[2] // anneal_steps[2])
-
-        # Get a fresh state object and update the OpenMMSet
-        state = StateInput(
-            sim.context.getState(
-                getPositions=True,
-                getVelocities=True,
-                enforcePeriodicBox=True,
-            )
-        )
-        input_set[input_set.state_file] = state
-
-        return input_set
+        return flow
