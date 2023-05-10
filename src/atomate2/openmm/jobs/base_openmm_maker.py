@@ -194,9 +194,9 @@ class BaseOpenMMMaker(Maker):
         output_set[output_set.state_file] = state
 
         # overwrite input set topology with topology from simulation
-        pdb_reporter = PDBReporter(str(output_dir / "topology.pdb"), 1)
+        pdb_reporter = PDBReporter(str(Path(output_dir) / "topology.pdb"), 1)
         pdb_reporter.report(sim, sim.context.getState(getPositions=True))
-        topology = TopologyInput.from_file(str(output_dir / "topology.pdb"))
+        topology = TopologyInput.from_file(Path(output_dir) / "topology.pdb")
 
         output_set[output_set.topology_file] = topology
 
