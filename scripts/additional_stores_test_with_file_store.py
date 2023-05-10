@@ -4,9 +4,10 @@ from jobflow import JobStore, job, run_locally
 from pathlib import Path
 
 file_path = Path("data/hello_world.txt")
+data = {"hello world": "123"}
 
 
-@job(file_store="file")
+@job(file_store="my_file")
 def some_task():
     """
     The file_store argument in the @job decorator tells jobflow to store the value associated
@@ -14,8 +15,8 @@ def some_task():
     stored into the doc_store.
     """
     return {
-        "file": file_path,
-        "doc_store": {"hello world": "123"}
+        "my_file": file_path,
+        "my_data": data
     }
 
 
@@ -30,3 +31,4 @@ store = JobStore(docs_store, additional_stores={"file_store": file_store})
 output = run_locally(some_task_job, store=store, ensure_success=True)
 
 assert str(file_path) == next(file_store.query())["path"]
+assert data == next(docs_store.query())["output"]["my_data"]
