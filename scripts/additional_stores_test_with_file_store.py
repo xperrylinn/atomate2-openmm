@@ -32,3 +32,4 @@ output = run_locally(some_task_job, store=store, ensure_success=True)
 
 assert str(file_path) == next(file_store.query())["path"]
 assert data == next(docs_store.query())["output"]["my_data"]
+assert next(docs_store.query())["output"]["my_file"]
