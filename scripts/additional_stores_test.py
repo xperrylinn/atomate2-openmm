@@ -1,39 +1,32 @@
-"""
-In this example, we show case the ability of jobflow to use multiple stores.
-
-Jobs that use additional stores must be run with a JobStore that supports those stores.
-"""
-
 from maggma.stores import MemoryStore
-
+from maggma.stores.file_store import FileStore
 from jobflow import JobStore, job, run_locally
+from pathlib import Path
+
+file_path = Path("data/hello_world.txt")
 
 
-@job(data="data")
-def generate_big_data():
+@job(file_store="file")
+def some_task():
     """
-    Generate some data.
-
-    The data=True in the job decorator tells jobflow to store all outputs in the "data"
-    additional store.
+    The file_store argument in the @job decorator tells jobflow to store the value associated
+    with the file_store in the additional stores provided to a JobStore. By default other outputs
+    stored into the doc_store.
     """
-    mydata = list(range(1000))
     return {
-        "data": mydata,
+        "file": file_path,
         "doc_store": {"hello world": "123"}
     }
 
 
-big_data_job = generate_big_data()
+some_task_job = some_task()
 
-# in this example, we use different memory stores for the documents and "data"
-# additional store. In practice, any Maggma Store subclass can be used for either store.
 docs_store = MemoryStore()
-data_store = MemoryStore()
-store = JobStore(docs_store, additional_stores={"data": data_store})
 
-# Because our job requires an additional store named "data" we have to use our
-# custom store when running the job.
-output = run_locally(big_data_job, store=store, ensure_success=True)
+file_store = FileStore(path="./data/", read_only=False)
 
-print(output)
+store = JobStore(docs_store, additional_stores={"file_store": file_store})
+
+output = run_locally(some_task_job, store=store, ensure_success=True)
+
+assert str(file_path) == next(file_store.query())["path"]
