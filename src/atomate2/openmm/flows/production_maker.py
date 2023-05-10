@@ -1,5 +1,5 @@
 from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
-from src.atomate2.openmm.jobs.maker_npt import NPTMaker
+from src.atomate2.openmm.jobs.npt_maker import NPTMaker
 from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from typing import Optional, Union

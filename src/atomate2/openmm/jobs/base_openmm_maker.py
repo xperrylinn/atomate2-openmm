@@ -100,7 +100,7 @@ class BaseOpenMMMaker(Maker):
         task_details = self._run_openmm(sim)
 
         # Close the simulation
-        input_set = self._close_base_openmm_task(input_set, sim.context, task_details, output_dir)
+        input_set = self._close_base_openmm_task(sim, input_set, sim.context, task_details, output_dir)
 
         return input_set
 
@@ -178,7 +178,9 @@ class BaseOpenMMMaker(Maker):
         """
         raise NotImplementedError("_run_openmm should be implemented by each class that derives from BaseOpenMMMaker.")
 
-    def _close_base_openmm_task(self, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
+    def _close_base_openmm_task(self, sim: Simulation, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
+
+        from pymatgen.io.openmm.inputs import TopologyInput
 
         # Create an output OpenMMSet for CalculationOutput
         output_set = copy.deepcopy(input_set)
@@ -190,6 +192,13 @@ class BaseOpenMMMaker(Maker):
             )
         )
         output_set[output_set.state_file] = state
+
+        # overwrite input set topology with topology from simulation
+        pdb_reporter = PDBReporter(str(output_dir / "topology.pdb"), 1)
+        pdb_reporter.report(sim, sim.context.getState(getPositions=True))
+        topology = TopologyInput.from_file(str(output_dir / "topology.pdb"))
+
+        output_set[output_set.topology_file] = topology
 
         # Grab StateDataReporter and DCDReporter if present on simulation reporters
         state_reports, dcd_reports = None, None
@@ -206,7 +215,7 @@ class BaseOpenMMMaker(Maker):
                 report_interval=self.dcd_reporter_interval
             )
 
-        # TODO: create a PDP reporter and report once to create a new PDB file to add to output
+
 
         calculation_input = CalculationInput(
             input_set=input_set,
