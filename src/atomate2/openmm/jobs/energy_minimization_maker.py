@@ -9,7 +9,6 @@ class EnergyMinimizationMaker(BaseOpenMMMaker):
     # TODO: add default kwargs for Simulation.minimizeEnergy?
     # tolerance
     # maxIterations : int
-    state_reporter_interval: int = 0
 
     def _run_openmm(self, sim):
 

@@ -29,7 +29,8 @@ class TempChangeMaker(BaseOpenMMMaker):
             integrator.setTemperature(temp * kelvin)
             sim.step(self.steps // self.temp_steps)
 
-        task_details = asdict()
+        # TODO: we could also write out task_details like this?
+        task_details = asdict(self)
 
         task_details = TaskDetails(
             task_name=self.name,

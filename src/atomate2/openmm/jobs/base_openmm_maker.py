@@ -15,7 +15,7 @@ from src.atomate2.openmm.constants import OpenMMConstants
 from src.atomate2.openmm.logger import logger
 from openmm import Platform, Context
 from typing import Union, Optional
-from openmm.app import DCDReporter, StateDataReporter
+from openmm.app import DCDReporter, StateDataReporter, PDBReporter
 from openmm.app.simulation import Simulation
 from tempfile import TemporaryDirectory
 import copy
