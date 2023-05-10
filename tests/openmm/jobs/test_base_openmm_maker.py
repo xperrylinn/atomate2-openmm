@@ -23,6 +23,7 @@ def test_base_openmm_maker(alchemy_input_set, job_store, task_details, caplog):
 
         # Validate _setup_base_openmm_task
         task_doc = base_job_maker._close_base_openmm_task(
+            sim,
             input_set=alchemy_input_set,
             context=sim.context,
             task_details=task_details,
