@@ -12,6 +12,7 @@ from pydantic import Field
 from pymatgen.io.openmm.inputs import StateInput
 
 from src.atomate2.openmm.jobs.npt_maker import NPTMaker
+from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
 from src.atomate2.openmm.jobs.temperature_maker import TempChangeMaker
 
 @dataclass
@@ -23,16 +24,18 @@ class AnnealMaker(Maker):
 
     name: str = "anneal"
     raise_temp_maker: TempChangeMaker = field(default_factory=lambda: TempChangeMaker(final_temp=400))
-    npt_maker: NPTMaker = field(default_factory=NPTMaker)
+    nvt_maker: NVTMaker = field(default_factory=NPTMaker)
     lower_temp_maker: TempChangeMaker = field(default_factory=TempChangeMaker)
 
-    @staticmethod
+    @classmethod
     def from_temps_and_steps(
+            cls,
             anneal_temp: int = 400,
             final_temp: int = 298,
             steps: Union[int, Tuple[int, int, int]] = 1500000,
             temp_steps: Union[int, Tuple[int, int, int]] = 100,
-            names: Tuple[str, str, str] = ("raise temp", "hold temp", "lower temp")
+            name: str = "anneal",
+            job_names: Tuple[str, str, str] = ("raise temp", "hold temp", "lower temp")
     ):
         if isinstance(steps, int):
             steps = (steps // 3, steps // 3, steps - 2 * (steps // 3))
@@ -41,23 +44,25 @@ class AnnealMaker(Maker):
 
         raise_temp_maker = TempChangeMaker(
             steps=steps[0],
-            name=names[0],
+            name=job_names[0],
             final_temp=anneal_temp,
             temp_steps=temp_steps[0]
         )
-        npt_maker = NPTMaker(
+        nvt_maker = NVTMaker(
             steps=steps[1],
-            name=names[1],
+            name=job_names[1],
+            temperature=anneal_temp,
         )
         lower_temp_maker = TempChangeMaker(
             steps=steps[2],
-            name=names[2],
+            name=job_names[2],
             final_temp=final_temp,
             temp_steps=temp_steps[2]
         )
-        return AnnealMaker(
+        return cls(
+            name=name,
             raise_temp_maker=raise_temp_maker,
-            npt_maker=npt_maker,
+            nvt_maker=nvt_maker,
             lower_temp_maker=lower_temp_maker,
         )
 
@@ -95,13 +100,13 @@ class AnnealMaker(Maker):
             input_set=input_set,
             output_dir=output_dir,
         )
-        npt_job = self.npt_maker.make(
+        nvt_job = self.nvt_maker.make(
             input_set=raise_temp_job.output.calculation_output.output_set,
             output_dir=output_dir,
         )
         lower_temp_job = self.lower_temp_maker.make(
-            input_set=npt_job.output.calculation_output.output_set,
+            input_set=nvt_job.output.calculation_output.output_set,
             output_dir=output_dir,
         )
 
-        return Flow([raise_temp_job, npt_job, lower_temp_job], output=lower_temp_job.output)
+        return Flow([raise_temp_job, nvt_job, lower_temp_job], output=lower_temp_job.output)

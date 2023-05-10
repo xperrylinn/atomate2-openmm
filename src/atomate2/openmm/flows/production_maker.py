@@ -63,7 +63,7 @@ class ProductionMaker(Maker):
                 anneal_job,
                 nvt_job,
             ],
-            output={"log": nvt_job},
+            output={"log": nvt_job, "test": anneal_job},
         )
 
         return my_flow
