@@ -5,7 +5,7 @@ from src.atomate2.openmm.flows.anneal_maker import AnnealMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from typing import Optional, Union
 from pathlib import Path
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pydantic import Field
 from jobflow import Maker, Flow
 
@@ -16,11 +16,10 @@ class ProductionMaker(Maker):
     Class for running
     """
     name: str = "production"
-    # TODO: default factory not working for some reason
-    energy_maker: EnergyMinimizationMaker = Field(default_factory=lambda: EnergyMinimizationMaker())
-    npt_maker: NPTMaker = Field(default_factory=lambda: NPTMaker())
-    anneal_maker: AnnealMaker = Field(default_factory=AnnealMaker())
-    nvt_maker: NVTMaker = Field(default_factory=lambda: NVTMaker())
+    energy_maker: EnergyMinimizationMaker = field(default_factory=EnergyMinimizationMaker)
+    npt_maker: NPTMaker = field(default_factory=NPTMaker)
+    anneal_maker: AnnealMaker = field(default_factory=AnnealMaker)
+    nvt_maker: NVTMaker = field(default_factory=NVTMaker)
 
     def make(self, input_set: OpenMMSet, output_dir: Optional[Union[str, Path]] = None):
         """
@@ -48,7 +47,7 @@ class ProductionMaker(Maker):
         )
 
         anneal_job = self.anneal_maker.make(
-            input_set=pressure_job.output,
+            input_set=pressure_job.output.calculation_output.output_set,
             output_dir=output_dir
         )
 
