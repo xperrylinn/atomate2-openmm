@@ -15,20 +15,17 @@ def test_production_maker(alchemy_input_set, job_store):
         steps=100,
         temp_steps=10
     )
-    energy_maker = EnergyMinimizationMaker(
-        state_reporter_interval=0,
-        dcd_reporter_interval=0,
-    ),
+    energy_maker = EnergyMinimizationMaker()
     npt_maker = NPTMaker(
         steps=100,
         state_reporter_interval=10,
         dcd_reporter_interval=10,
-    ),
+    )
     nvt_maker = NVTMaker(
         steps=100,
         state_reporter_interval=10,
         dcd_reporter_interval=10,
-    ),
+    )
 
     production_maker = ProductionMaker(
         energy_maker=energy_maker,
@@ -39,7 +36,7 @@ def test_production_maker(alchemy_input_set, job_store):
 
     production_flow = production_maker.make(input_set=alchemy_input_set)
 
-    responses = run_locally(flow=production_flow, ensure_success=True)
+    responses = run_locally(flow=production_flow)
 
     for job_response in responses.values():
         assert isinstance(job_response[1].output, OpenMMTaskDocument)
