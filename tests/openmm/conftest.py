@@ -31,7 +31,7 @@ def test_data_dir():
 
 @pytest.fixture(scope="session")
 def alchemy_input_set_dir(test_data_dir):
-    alchemy_input_set_dir = Path(os.path.join(test_data_dir, "./alchemy_input_set")).resolve()
+    alchemy_input_set_dir = Path(os.path.join(test_data_dir, "./minimized_alchemy_input_set")).resolve()
     return alchemy_input_set_dir
 
 
