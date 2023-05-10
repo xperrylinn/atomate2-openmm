@@ -3,7 +3,7 @@ from jobflow import job, Maker, Job
 from dataclasses import dataclass, field
 from pathlib import Path
 from pymatgen.io.openmm.sets import OpenMMSet
-from pymatgen.io.openmm.inputs import StateInput
+from pymatgen.io.openmm.inputs import StateInput, IntegratorInput, TopologyInput
 from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
 from src.atomate2.openmm.schemas.physical_state import PhysicalState
 from src.atomate2.openmm.schemas.task_details import TaskDetails
@@ -183,8 +183,6 @@ class BaseOpenMMMaker(Maker):
 
     def _close_base_openmm_task(self, sim: Simulation, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
 
-        from pymatgen.io.openmm.inputs import TopologyInput
-
         # Create an output OpenMMSet for CalculationOutput
         output_set = copy.deepcopy(input_set)
         state = StateInput(
@@ -194,14 +192,17 @@ class BaseOpenMMMaker(Maker):
                 enforcePeriodicBox=True,
             )
         )
-        output_set[output_set.state_file] = state
-
         # overwrite input set topology with topology from simulation
         pdb_reporter = PDBReporter(str(Path(output_dir) / "topology.pdb"), 1)
         pdb_reporter.report(sim, sim.context.getState(getPositions=True))
         topology = TopologyInput.from_file(Path(output_dir) / "topology.pdb")
 
+        integrator = IntegratorInput(sim.context.getIntegrator())
+
+        output_set[output_set.state_file] = state
         output_set[output_set.topology_file] = topology
+        output_set[output_set.integrator_file] = IntegratorInput(integrator)
+
 
         # Grab StateDataReporter and DCDReporter if present on simulation reporters
         state_reports, dcd_reports = None, None
