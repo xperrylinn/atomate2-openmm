@@ -1,5 +1,5 @@
 def test_phyical_state(alchemy_input_set):
-    from src.atomate2.openmm.schemas.physical_state import PhysicalState
+    from atomate2.openmm.schemas.physical_state import PhysicalState
 
     physical_state = PhysicalState.from_input_set(alchemy_input_set)
 

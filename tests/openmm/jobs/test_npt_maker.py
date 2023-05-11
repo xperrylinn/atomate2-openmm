@@ -1,7 +1,7 @@
 def test_npt_maker(alchemy_input_set, job_store):
-    from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
-    from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
-    from src.atomate2.openmm.jobs.npt_maker import NPTMaker
+    from atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
+    from atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+    from atomate2.openmm.jobs.npt_maker import NPTMaker
     from jobflow import Flow, run_locally
 
     energy_minimization_job_maker = EnergyMinimizationMaker()

@@ -1,9 +1,9 @@
-# from src.atomate2.openmm.flows.anneal_maker import AnnealMaker
+from atomate2.openmm.flows.anneal_maker import AnnealMaker
 
 
 def test_production_maker(alchemy_input_set, job_store):
     import atomate2.utils
-    from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
+    from atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
     from atomate2.openmm.jobs.nvt_maker import NVTMaker
     from atomate2.openmm.jobs.npt_maker import NPTMaker
     from atomate2.openmm.flows.production_maker import ProductionMaker

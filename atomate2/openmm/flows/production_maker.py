@@ -1,12 +1,11 @@
-from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
-from src.atomate2.openmm.jobs.npt_maker import NPTMaker
-from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
-from src.atomate2.openmm.flows.anneal_maker import AnnealMaker
+from atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
+from atomate2.openmm.jobs.npt_maker import NPTMaker
+from atomate2.openmm.jobs.nvt_maker import NVTMaker
+from atomate2.openmm.flows.anneal_maker import AnnealMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from typing import Optional, Union
 from pathlib import Path
 from dataclasses import dataclass, field
-from pydantic import Field
 from jobflow import Maker, Flow
 
 

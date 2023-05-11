@@ -4,15 +4,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from pymatgen.io.openmm.sets import OpenMMSet
 from pymatgen.io.openmm.inputs import StateInput, IntegratorInput, TopologyInput
-from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
-from src.atomate2.openmm.schemas.physical_state import PhysicalState
-from src.atomate2.openmm.schemas.task_details import TaskDetails
-from src.atomate2.openmm.schemas.dcd_reports import DCDReports
-from src.atomate2.openmm.schemas.state_reports import StateReports
-from src.atomate2.openmm.schemas.calculation_input import CalculationInput
-from src.atomate2.openmm.schemas.calculation_output import CalculationOutput
-from src.atomate2.openmm.constants import OpenMMConstants
-from src.atomate2.openmm.logger import logger
+from atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+from atomate2.openmm.schemas.physical_state import PhysicalState
+from atomate2.openmm.schemas.task_details import TaskDetails
+from atomate2.openmm.schemas.dcd_reports import DCDReports
+from atomate2.openmm.schemas.state_reports import StateReports
+from atomate2.openmm.schemas.calculation_input import CalculationInput
+from atomate2.openmm.schemas.calculation_output import CalculationOutput
+from atomate2.openmm.constants import OpenMMConstants
+from atomate2.openmm.logger import logger
 from openmm import Platform, Context
 from typing import Union, Optional
 from openmm.app import DCDReporter, StateDataReporter, PDBReporter

@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import List, Union
-from src.atomate2.openmm.constants import OpenMMConstants
+from atomate2.openmm.constants import OpenMMConstants
 import numpy as np
 import pathlib
-from src.atomate2.openmm.logger import logger
+from atomate2.openmm.logger import logger
 
 
 class StateReports(BaseModel):

@@ -1,8 +1,7 @@
-from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
-from src.atomate2.openmm.schemas.task_details import TaskDetails
-from openmm.openmm import MonteCarloBarostat
+from atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
+from atomate2.openmm.schemas.task_details import TaskDetails
 from dataclasses import dataclass, asdict
-from openmm.unit import kelvin, atmosphere
+from openmm.unit import kelvin
 import numpy as np
 
 

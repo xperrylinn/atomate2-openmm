@@ -1,5 +1,5 @@
 def test_energy_minimization_maker(alchemy_input_set, job_store):
-    from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
+    from atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
     from jobflow import run_locally
 
     energy_minimization_job_maker = EnergyMinimizationMaker(dcd_reporter_interval=1)

@@ -1,19 +1,12 @@
-from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from typing import Union, Optional, Dict, Tuple
 from pymatgen.io.openmm.sets import OpenMMSet
 from openmm import Platform
 from dataclasses import dataclass, field
-from jobflow import job, Flow, Maker
-from openmm.app import DCDReporter
-from openmm.unit import kelvin
-import os
-import numpy as np
-from pydantic import Field
-from pymatgen.io.openmm.inputs import StateInput
+from jobflow import Flow, Maker
 
-from src.atomate2.openmm.jobs.npt_maker import NPTMaker
-from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
-from src.atomate2.openmm.jobs.temp_change_maker import TempChangeMaker
+from atomate2.openmm.jobs.npt_maker import NPTMaker
+from atomate2.openmm.jobs.nvt_maker import NVTMaker
+from atomate2.openmm.jobs.temp_change_maker import TempChangeMaker
 
 @dataclass
 class AnnealMaker(Maker):

@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 from pymatgen.io.openmm.sets import OpenMMSet
-from src.atomate2.openmm.schemas.physical_state import PhysicalState
-from src.atomate2.openmm.schemas.dcd_reports import DCDReports
-from src.atomate2.openmm.schemas.state_reports import StateReports
-from typing import List, Union
+from atomate2.openmm.schemas.physical_state import PhysicalState
+from atomate2.openmm.schemas.dcd_reports import DCDReports
+from atomate2.openmm.schemas.state_reports import StateReports
+from typing import Union
 import pathlib
 
 

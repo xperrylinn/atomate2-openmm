@@ -1,5 +1,5 @@
-from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
-from src.atomate2.openmm.schemas.task_details import TaskDetails
+from atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
+from atomate2.openmm.schemas.task_details import TaskDetails
 from openmm.openmm import MonteCarloBarostat
 from dataclasses import dataclass
 from openmm.unit import kelvin, atmosphere

@@ -1,5 +1,5 @@
 def test_task_details():
-    from src.atomate2.openmm.schemas.task_details import TaskDetails
+    from atomate2.openmm.schemas.task_details import TaskDetails
 
     task_details = TaskDetails(
         task_name="my_task",

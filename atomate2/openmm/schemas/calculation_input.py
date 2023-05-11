@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from pymatgen.io.openmm.schema import SetContents
 from pymatgen.io.openmm.sets import OpenMMSet
-from src.atomate2.openmm.schemas.physical_state import PhysicalState
+from atomate2.openmm.schemas.physical_state import PhysicalState
 
 
 class CalculationInput(BaseModel):
