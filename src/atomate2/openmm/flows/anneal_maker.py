@@ -13,7 +13,7 @@ from pymatgen.io.openmm.inputs import StateInput
 
 from src.atomate2.openmm.jobs.npt_maker import NPTMaker
 from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
-from src.atomate2.openmm.jobs.temperature_maker import TempChangeMaker
+from src.atomate2.openmm.jobs.temp_change_maker import TempChangeMaker
 
 @dataclass
 class AnnealMaker(Maker):

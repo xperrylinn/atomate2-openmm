@@ -34,16 +34,4 @@ class NPTMaker(BaseOpenMMMaker):
         system.removeForce(barostat_force_index)
         context.reinitialize(preserveState=True)
 
-        task_details = TaskDetails(
-            task_name=self.name,
-            task_kwargs={
-                "steps": self.steps,
-                "temperature": self.temperature,
-                "frequency": self.frequency,
-                "pressure": self.pressure,
-            },
-            platform_kwargs=self.platform_kwargs,
-            total_steps=self.steps,
-        )
-
-        return task_details
+        return TaskDetails.from_maker(self)

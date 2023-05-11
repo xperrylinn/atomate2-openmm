@@ -201,7 +201,7 @@ class BaseOpenMMMaker(Maker):
 
         output_set[output_set.state_file] = state
         output_set[output_set.topology_file] = topology
-        output_set[output_set.integrator_file] = IntegratorInput(integrator)
+        output_set[output_set.integrator_file] = integrator
 
 
         # Grab StateDataReporter and DCDReporter if present on simulation reporters

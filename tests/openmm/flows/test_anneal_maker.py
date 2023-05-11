@@ -1,5 +1,5 @@
 from src.atomate2.openmm.flows.anneal_maker import AnnealMaker
-from src.atomate2.openmm.jobs.temperature_maker import TempChangeMaker
+from src.atomate2.openmm.jobs.temp_change_maker import TempChangeMaker
 
 
 def test_anneal_maker(alchemy_input_set, job_store):
@@ -12,7 +12,7 @@ def test_anneal_maker(alchemy_input_set, job_store):
 
     anneal_maker = AnnealMaker(
         raise_temp_maker=TempChangeMaker(steps=100, temp_steps=10, final_temp=310),
-        npt_maker=NPTMaker(steps=100),
+        nvt_maker=NVTMaker(steps=100, temperature=310),
         lower_temp_maker=TempChangeMaker(steps=100, temp_steps=10),
     )
 
