@@ -18,14 +18,4 @@ class NVTMaker(BaseOpenMMMaker):
         # Run the simulation
         sim.step(self.steps)
 
-        task_details = TaskDetails(
-            task_name=self.name,
-            task_kwargs={
-                "steps": self.steps,
-                "temperature": self.temperature,
-                # "frequency": self.frequency,
-            },
-            platform_kwargs=self.platform_kwargs,
-        )
-
-        return task_details
+        return TaskDetails.from_maker(self)

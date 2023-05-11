@@ -14,12 +14,4 @@ class EnergyMinimizationMaker(BaseOpenMMMaker):
 
         # Minimize the energy
         sim.minimizeEnergy()
-
-        task_details = TaskDetails(
-            task_name=self.name,
-            task_kwargs=None,
-            platform_kwargs=self.platform_kwargs,
-            total_steps=0,
-        )
-
-        return task_details
+        return TaskDetails.from_maker(self)
