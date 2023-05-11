@@ -1,0 +1,10 @@
+JOB_STORE:
+  docs_store:
+    type: MongoURIStore
+    uri: mongodb+srv://<<USERNAME>>:<<PASSWORD>>@atomate2-openmm.vlzvqsg.mongodb.net/?retryWrites=true&w=majority
+    collection_name: outputs
+  additional_stores:
+    data:
+      type: GridFSURIStore
+      uri: mongodb+srv://<<USERNAME>>:<<PASSWORD>>@<<HOST>>/<<DB_NAME>>?retryWrites=true&w=majority
+      collection_name: outputs_blobs

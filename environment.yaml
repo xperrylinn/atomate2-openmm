@@ -1,0 +1,18 @@
+name: atomate2-openmm
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pytest
+#  - pymatgen
+  - openmm
+  - openff-toolkit # pymatgen-io-openmm
+  - MDAnalysis # pymatgen-io-openmm
+  - atomate2
+  - jobflow
+  - pandas
+  - pip:
+      - git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
+      - git+https://github.com/orionarcher/pymatgen@input_set_fi
+      - erdantic
