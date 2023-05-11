@@ -9,7 +9,7 @@ import numpy as np
 @dataclass
 class TempChangeMaker(BaseOpenMMMaker):
     steps: int = 1000000
-    name: str = "npt simulation"
+    name: str = "temperature change"
     final_temp: float = 298
     temp_steps: int = 100
 
@@ -40,5 +40,4 @@ class TempChangeMaker(BaseOpenMMMaker):
             platform_kwargs=self.platform_kwargs,
             total_steps=self.steps,
         )
-
-        return task_details
+        return TaskDetails.from_maker(self)
