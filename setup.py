@@ -10,9 +10,10 @@ with open(os.path.join(SETUP_PTH, "README.md")) as f:
 
 setup(
     name="atomate2-openmm",  # mypy: ignore
-    packages=find_namespace_packages(include=["atomate2.*"]),
+    packages=find_namespace_packages(where="src", include=["atomate2.*"]),
     version="0.0.1",
-    install_requires=[
+    package_dir={"": "src"},
+    # install_requires=[
         # "pymatgen>=2022.3.22",
         # "openmm",
         # "parmed",
@@ -23,7 +24,7 @@ setup(
         # "openff-toolkit>=0.12.0",
         # "packmol",
         # "openmmforcefields",
-    ],
+    # ],
     extras_require={},
     package_data={},
     # authors=["orion cohen", "xavier linn"],
