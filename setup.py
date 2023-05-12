@@ -18,7 +18,7 @@ setup(
         "pymatgen-io-openmm @ git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git",
         "pydantic",
         "jobflow",
-        "pymatgen",
+        "pymatgen>=2023.05.10",
     ],
     extras_require={},
     package_data={},
