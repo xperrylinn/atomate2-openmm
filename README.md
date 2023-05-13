@@ -23,6 +23,17 @@ A Python3.8 environment setup using conda according to the steps below:
 - ATLAS_USERNAME: <username for MongoDB Atlas>
 - ATLAS_PASSWORD: <database password. See database access page.>
 
+## Configuration Files
+
+For AWS S3 IO, make sure you have an `~/.aws/credentials` INI file present with the following secion and key values pairs:
+
+```
+[atomate2-openmm-dev]
+aws_access_key_id=<your AWS access key>
+aws_secret_access_key=<your AWS secret key>
+
+```
+
 ## Running Test
 
 From root of repo, run the following command:
