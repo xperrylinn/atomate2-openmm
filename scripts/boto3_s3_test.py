@@ -1,7 +1,5 @@
 import boto3
 
-BUCKET = "atomate2-openmm"
-
 session = boto3.Session(profile_name="atomate2-openmm-dev")
 client = session.client("s3")
 
