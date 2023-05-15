@@ -37,7 +37,7 @@ def openmm_job(method: Callable):
         A decorated version of the make function that will generate OpenMM jobs.
     """
     # todo: add data keyword argument to specify where to write bigger files like trajectory files
-    return job(callable=method, output_schema=OpenMMTaskDocument, trajectory_store=DCDReports)
+    return job(method=method, output_schema=OpenMMTaskDocument, trajectory_store=DCDReports)
 
 
 @dataclass
