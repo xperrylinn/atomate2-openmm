@@ -203,7 +203,6 @@ class BaseOpenMMMaker(Maker):
         output_set[output_set.topology_file] = topology
         output_set[output_set.integrator_file] = integrator
 
-
         # Grab StateDataReporter and DCDReporter if present on simulation reporters
         state_reports, dcd_reports = None, None
         if self.state_reporter_interval > 0:
@@ -214,12 +213,11 @@ class BaseOpenMMMaker(Maker):
             state_reports = StateReports.from_state_file(state_file_name)
         if self.dcd_reporter_interval > 0:
             dcd_file_name = os.path.join(output_dir, "trajectory_dcd")
-            dcd_reports = DCDReports(
-                location=dcd_file_name,
-                report_interval=self.dcd_reporter_interval
+            dcd_reports = DCDReports.from_dcd_file(
+                dcd_file_path=dcd_file_name,
+                report_interval=self.dcd_reporter_interval,
+                enforce_periodic_box=self.wrap_dcd,
             )
-
-
 
         calculation_input = CalculationInput(
             input_set=input_set,
