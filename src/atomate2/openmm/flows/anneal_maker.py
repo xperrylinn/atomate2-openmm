@@ -1,3 +1,5 @@
+from tempfile import TemporaryDirectory
+
 from atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
 from typing import Union, Optional, Dict, Tuple
 from pymatgen.io.openmm.sets import OpenMMSet
@@ -100,7 +102,14 @@ class AnnealMaker(Maker):
         Job
             A OpenMM job containing one npt run.
         """
-        output_dir = Path(output_dir)
+        if output_dir is None:
+            # TODO: will temp_dir close properly? When will it close?
+            temp_dir = TemporaryDirectory()
+            output_dir = temp_dir.name
+            output_dir = Path(output_dir)
+        else:
+            output_dir = Path(output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         raise_temp_job = self.raise_temp_maker.make(
             input_set=input_set,

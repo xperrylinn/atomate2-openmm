@@ -4,6 +4,7 @@ from atomate2.openmm.jobs.openmm_set_maker import OpenMMSetMaker
 
 from maggma.stores import MemoryStore
 
+
 def test_openmm_set_maker(job_store):
     input_mol_dicts = [
         {"smile": "O", "count": 200},
@@ -13,6 +14,7 @@ def test_openmm_set_maker(job_store):
     from atomate2.openmm.jobs.nvt_maker import NVTMaker
     from atomate2.openmm.jobs.npt_maker import NPTMaker
     from atomate2.openmm.flows.production_maker import ProductionMaker
+    from atomate2.openmm.flows.anneal_maker import AnnealMaker
     from atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
     from jobflow import run_locally
 

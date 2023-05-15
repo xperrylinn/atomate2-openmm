@@ -1,3 +1,5 @@
+from tempfile import TemporaryDirectory
+
 from atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
 from atomate2.openmm.jobs.npt_maker import NPTMaker
 from atomate2.openmm.jobs.nvt_maker import NVTMaker
@@ -34,7 +36,14 @@ class ProductionMaker(Maker):
         -------
 
         """
-        output_dir = Path(output_dir)
+        if output_dir is None:
+            # TODO: will temp_dir close properly? When will it close?
+            temp_dir = TemporaryDirectory()
+            output_dir = temp_dir.name
+            output_dir = Path(output_dir)
+        else:
+            output_dir = Path(output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         energy_job = self.energy_maker.make(
             input_set=input_set,
