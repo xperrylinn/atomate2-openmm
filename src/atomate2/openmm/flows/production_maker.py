@@ -35,25 +35,26 @@ class ProductionMaker(Maker):
         -------
 
         """
+        output_dir = Path(output_dir)
 
         energy_job = self.energy_maker.make(
             input_set=input_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"0_{self.energy_maker.name.replace(' ', '_')}"
         )
 
         pressure_job = self.npt_maker.make(
             input_set=energy_job.output.calculation_output.output_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"1_{self.npt_maker.name.replace(' ', '_')}"
         )
 
         anneal_job = self.anneal_maker.make(
             input_set=pressure_job.output.calculation_output.output_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"2_{self.anneal_maker.name.replace(' ', '_')}"
         )
 
         nvt_job = self.nvt_maker.make(
             input_set=pressure_job.output.calculation_output.output_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"3_{self.nvt_maker.name.replace(' ', '_')}"
         )
 
         my_flow = Flow(
@@ -63,7 +64,7 @@ class ProductionMaker(Maker):
                 anneal_job,
                 nvt_job,
             ],
-            output={"log": nvt_job, "test": anneal_job},
+            output={"log": nvt_job},
         )
 
         return my_flow
