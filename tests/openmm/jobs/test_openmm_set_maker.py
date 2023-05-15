@@ -1,6 +1,6 @@
 from jobflow import run_locally
 
-from src.atomate2.openmm.jobs.openmm_set_maker import OpenMMSetMaker
+from atomate2.openmm.jobs.openmm_set_maker import OpenMMSetMaker
 
 from maggma.stores import MemoryStore
 
@@ -9,11 +9,11 @@ def test_openmm_set_maker(job_store):
         {"smile": "O", "count": 200},
         {"smile": "CCO", "count": 20},
     ]
-    from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
-    from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
-    from src.atomate2.openmm.jobs.npt_maker import NPTMaker
-    from src.atomate2.openmm.flows.production_maker import ProductionMaker
-    from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+    from atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
+    from atomate2.openmm.jobs.nvt_maker import NVTMaker
+    from atomate2.openmm.jobs.npt_maker import NPTMaker
+    from atomate2.openmm.flows.production_maker import ProductionMaker
+    from atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
     from jobflow import run_locally
 
     anneal_maker = AnnealMaker.from_temps_and_steps(
