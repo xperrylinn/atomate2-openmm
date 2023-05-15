@@ -8,7 +8,7 @@ import pathlib
 
 
 class CalculationOutput(BaseModel):
-    output_set: OpenMMSet = Field(None, description="Input set for the calculation")
+    input_set: OpenMMSet = Field(None, description="Input set for the calculation")
     physical_state: PhysicalState = Field(None, description="Physical state for the calculation")
     state_reports: StateReports = Field(None, description="State reporter output")
     dcd_reports: DCDReports = Field(None, description="DCD reporter output")
@@ -28,6 +28,6 @@ class CalculationOutput(BaseModel):
             input_set=input_set,
             physical_state=PhysicalState.from_input_set(input_set),
             # these need to be named consistently when they are written out
-            state_reporter=StateReports.from_state_file(output_dir / "???"),
-            dcd_reporter=DCDReports.from_dcd_file(output_dir / "???"),
+            state_reporter=StateReports.from_state_file(output_dir / "state_csv"),
+            dcd_reporter=DCDReports.from_dcd_file(output_dir / "trajectory_dcd"),
         )
