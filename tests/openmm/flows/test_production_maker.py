@@ -14,7 +14,11 @@ def test_production_maker(alchemy_input_set, job_store):
         anneal_temp=310,
         final_temp=298,
         steps=100,
-        temp_steps=10
+        temp_steps=10,
+        base_kwargs=dict(
+            state_reporter_interval=10,
+            dcd_reporter_interval=10,
+        )
     )
     energy_maker = EnergyMinimizationMaker()
     npt_maker = NPTMaker(
@@ -35,7 +39,8 @@ def test_production_maker(alchemy_input_set, job_store):
         nvt_maker=nvt_maker,
     )
 
-    production_flow = production_maker.make(input_set=alchemy_input_set)
+    # production_flow = production_maker.make(input_set=alchemy_input_set)
+    production_flow = production_maker.make(input_set=alchemy_input_set, output_dir="test_dir")
 
     responses = run_locally(flow=production_flow)
 

@@ -19,6 +19,10 @@ class TempChangeMaker(BaseOpenMMMaker):
 
         # Heating temperature
         delta_t = abs(self.final_temp * kelvin - start_temp)
+        if delta_t < 1e-6 * kelvin:
+            raise ValueError(f"Final temperature {self.final_temp} is too close to "
+                             f"starting temperature {start_temp}, make sure the "
+                             f"TempChangeMaker has a temperature differential.")
         temp_step_size = delta_t / self.temp_steps
         for temp in np.arange(
                 start_temp + temp_step_size,

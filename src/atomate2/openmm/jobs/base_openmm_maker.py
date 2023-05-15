@@ -17,7 +17,7 @@ from openmm import Platform, Context
 from typing import Union, Optional
 from openmm.app import DCDReporter, StateDataReporter, PDBReporter
 from openmm.app.simulation import Simulation
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, NamedTemporaryFile
 import copy
 import os
 
@@ -62,9 +62,9 @@ class BaseOpenMMMaker(Maker):
 
     @openmm_job
     def make(
-            self,
-            input_set: OpenMMSet,
-            output_dir: Optional[Union[str, Path]] = None,
+        self,
+        input_set: OpenMMSet,
+        output_dir: Optional[Union[str, Path]] = None,
     ) -> Job:
         """
         OpenMM Job Maker where each Job consist of three major steps:
@@ -87,12 +87,15 @@ class BaseOpenMMMaker(Maker):
             Path to directory for writing state and DCD trajectory files. This could be a temp or
             persistent directory.
         """
-
         # Define output_dir if as a temporary directory if not provided
         temp_dir = None     # Define potential pointer to temporary directory to keep in scope
         if output_dir is None:
             temp_dir = TemporaryDirectory()
             output_dir = temp_dir.name
+            output_dir = Path(output_dir)
+        else:
+            output_dir = Path(output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         # Setup simulation
         sim = self._setup_base_openmm_task(input_set, output_dir)
@@ -105,7 +108,7 @@ class BaseOpenMMMaker(Maker):
 
         return input_set
 
-    def _setup_base_openmm_task(self, input_set: OpenMMSet, output_dir: Union[str, Path]) -> Simulation:
+    def _setup_base_openmm_task(self, input_set: OpenMMSet, output_dir: Path) -> Simulation:
         """
         Initializes an OpenMM Simulation. Classes derived from BaseOpenMMMaker define the _run_openmm method
         and implement the specifics of an OpenMM task.
@@ -181,7 +184,7 @@ class BaseOpenMMMaker(Maker):
         """
         raise NotImplementedError("_run_openmm should be implemented by each class that derives from BaseOpenMMMaker.")
 
-    def _close_base_openmm_task(self, sim: Simulation, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
+    def _close_base_openmm_task(self, sim: Simulation, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Path):
 
         # Create an output OpenMMSet for CalculationOutput
         output_set = copy.deepcopy(input_set)
@@ -193,15 +196,18 @@ class BaseOpenMMMaker(Maker):
             )
         )
         # overwrite input set topology with topology from simulation
-        pdb_reporter = PDBReporter(str(Path(output_dir) / "topology.pdb"), 1)
-        pdb_reporter.report(sim, sim.context.getState(getPositions=True))
-        topology = TopologyInput.from_file(Path(output_dir) / "topology.pdb")
+        with NamedTemporaryFile(suffix=".pdb") as tmp:
+            pdb_reporter = PDBReporter(tmp.name, 1)
+            pdb_reporter.report(sim, sim.context.getState(getPositions=True))
+            topology = TopologyInput.from_file(tmp.name)
 
         integrator = IntegratorInput(sim.context.getIntegrator())
 
         output_set[output_set.state_file] = state
         output_set[output_set.topology_file] = topology
         output_set[output_set.integrator_file] = integrator
+
+        output_set.write_input(output_dir)
 
 
         # Grab StateDataReporter and DCDReporter if present on simulation reporters
@@ -218,8 +224,6 @@ class BaseOpenMMMaker(Maker):
                 location=dcd_file_name,
                 report_interval=self.dcd_reporter_interval
             )
-
-
 
         calculation_input = CalculationInput(
             input_set=input_set,

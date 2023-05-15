@@ -11,7 +11,7 @@ def test_npt_maker(alchemy_input_set, job_store):
         state_reporter_interval=10,
     )
     energy_minimization_job = energy_minimization_job_maker.make(input_set=alchemy_input_set)
-    npt_job = npt_job_maker.make(input_set=energy_minimization_job.output.calculation_output.output_set)
+    npt_job = npt_job_maker.make(input_set=energy_minimization_job.output.calculation_output.input_set)
     flow = Flow(
         jobs=[
             energy_minimization_job,
