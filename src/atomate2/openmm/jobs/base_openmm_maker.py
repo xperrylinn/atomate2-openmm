@@ -62,9 +62,9 @@ class BaseOpenMMMaker(Maker):
 
     @openmm_job
     def make(
-            self,
-            input_set: OpenMMSet,
-            output_dir: Optional[Union[str, Path]] = None,
+        self,
+        input_set: OpenMMSet,
+        output_dir: Optional[Union[str, Path]] = None,
     ) -> Job:
         """
         OpenMM Job Maker where each Job consist of three major steps:
