@@ -230,7 +230,7 @@ class BaseOpenMMMaker(Maker):
             physical_state=PhysicalState.from_input_set(input_set)
         )
         calculation_output = CalculationOutput(
-            output_set=output_set,
+            input_set=output_set,
             physical_state=PhysicalState.from_input_set(output_set),
             state_reports=state_reports,
             dcd_reports=dcd_reports,

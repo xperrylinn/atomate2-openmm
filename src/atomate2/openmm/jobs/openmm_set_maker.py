@@ -8,10 +8,10 @@ from pymatgen.io.openmm.generators import OpenMMSolutionGen
 from pymatgen.io.openmm.schema import InputMoleculeSpec
 from pymatgen.io.openmm.sets import OpenMMSet
 
-from src.atomate2.openmm.jobs.base_openmm_maker import openmm_job
-from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
-from src.atomate2.openmm.schemas.calculation_output import CalculationOutput
-from src.atomate2.openmm.schemas.physical_state import PhysicalState
+from atomate2.openmm.jobs.base_openmm_maker import openmm_job
+from atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+from atomate2.openmm.schemas.calculation_output import CalculationOutput
+from atomate2.openmm.schemas.physical_state import PhysicalState
 
 
 @dataclass
