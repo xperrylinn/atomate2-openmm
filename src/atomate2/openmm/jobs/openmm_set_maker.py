@@ -9,6 +9,9 @@ from pymatgen.io.openmm.schema import InputMoleculeSpec
 from pymatgen.io.openmm.sets import OpenMMSet
 
 from src.atomate2.openmm.jobs.base_openmm_maker import openmm_job
+from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+from src.atomate2.openmm.schemas.calculation_output import CalculationOutput
+from src.atomate2.openmm.schemas.physical_state import PhysicalState
 
 
 @dataclass
@@ -26,7 +29,7 @@ class OpenMMSetMaker(Maker):
         density: Optional[float] = None,
         box: Optional[List[float]] = None,
         output_dir: Optional[Union[str, Path]] = None
-    ) -> OpenMMSet:
+    ):
         if output_dir is None:
             temp_dir = TemporaryDirectory()
             output_dir = temp_dir.name
@@ -39,4 +42,13 @@ class OpenMMSetMaker(Maker):
 
         output_set.write_input(output_dir)
 
-        return output_set
+        task_doc = OpenMMTaskDocument(
+            output_dir=str(output_dir),
+            calculation_input=None,
+            calculation_output=CalculationOutput(
+                input_set=output_set,
+                physical_state=PhysicalState.from_input_set(output_set),
+            ),
+        )
+
+        return task_doc
