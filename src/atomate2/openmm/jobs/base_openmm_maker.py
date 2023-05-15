@@ -17,7 +17,7 @@ from openmm import Platform, Context
 from typing import Union, Optional
 from openmm.app import DCDReporter, StateDataReporter, PDBReporter
 from openmm.app.simulation import Simulation
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, NamedTemporaryFile
 import copy
 import os
 
@@ -196,15 +196,18 @@ class BaseOpenMMMaker(Maker):
             )
         )
         # overwrite input set topology with topology from simulation
-        pdb_reporter = PDBReporter(str(Path(output_dir) / "topology.pdb"), 1)
-        pdb_reporter.report(sim, sim.context.getState(getPositions=True))
-        topology = TopologyInput.from_file(Path(output_dir) / "topology.pdb")
+        with NamedTemporaryFile(suffix=".pdb") as tmp:
+            pdb_reporter = PDBReporter(tmp.name, 1)
+            pdb_reporter.report(sim, sim.context.getState(getPositions=True))
+            topology = TopologyInput.from_file(tmp.name)
 
         integrator = IntegratorInput(sim.context.getIntegrator())
 
         output_set[output_set.state_file] = state
         output_set[output_set.topology_file] = topology
         output_set[output_set.integrator_file] = integrator
+
+        output_set.write_input(output_dir)
 
 
         # Grab StateDataReporter and DCDReporter if present on simulation reporters
@@ -221,8 +224,6 @@ class BaseOpenMMMaker(Maker):
                 location=dcd_file_name,
                 report_interval=self.dcd_reporter_interval
             )
-
-
 
         calculation_input = CalculationInput(
             input_set=input_set,

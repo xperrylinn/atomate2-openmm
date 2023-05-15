@@ -43,17 +43,17 @@ class ProductionMaker(Maker):
         )
 
         pressure_job = self.npt_maker.make(
-            input_set=energy_job.output.calculation_output.output_set,
+            input_set=energy_job.output.calculation_output.input_set,
             output_dir=output_dir / f"1_{self.npt_maker.name.replace(' ', '_')}"
         )
 
         anneal_job = self.anneal_maker.make(
-            input_set=pressure_job.output.calculation_output.output_set,
+            input_set=pressure_job.output.calculation_output.input_set,
             output_dir=output_dir / f"2_{self.anneal_maker.name.replace(' ', '_')}"
         )
 
         nvt_job = self.nvt_maker.make(
-            input_set=pressure_job.output.calculation_output.output_set,
+            input_set=pressure_job.output.calculation_output.input_set,
             output_dir=output_dir / f"3_{self.nvt_maker.name.replace(' ', '_')}"
         )
 
