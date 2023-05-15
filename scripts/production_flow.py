@@ -1,7 +1,9 @@
 from src.atomate2.openmm.flows.production_maker import ProductionMaker
+from src.atomate2.openmm.flows.anneal_maker import AnnealMaker
 from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
 from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
-from src.atomate2.openmm.jobs.maker_npt import NPTMaker
+from src.atomate2.openmm.jobs.npt_maker import NPTMaker
+from src.atomate2.openmm.jobs.temp_change_maker import TempChangeMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from maggma.stores import MongoURIStore
 from maggma.stores.file_store import FileStore
@@ -29,6 +31,21 @@ production_maker = ProductionMaker(
         steps=100,
         state_reporter_interval=10,
         dcd_reporter_interval=10,
+    ),
+    anneal_maker=AnnealMaker(
+        raise_temp_maker=TempChangeMaker(
+            steps=1000,
+            temp_steps=100,
+        ),
+        nvt_maker=NVTMaker(
+            steps=100,
+            state_reporter_interval=10,
+            dcd_reporter_interval=10,
+        ),
+        lower_temp_maker=TempChangeMaker(
+            steps=1000,
+            temp_steps=100,
+        ),
     ),
     nvt_maker=NVTMaker(
         steps=100,
@@ -60,7 +77,7 @@ file_store = FileStore(path=temp_dir.name)
 # Create JobStore
 job_store = JobStore(
     docs_store=atlas_mongo_store,
-    additional_stores={"file_store": file_store},
+    additional_stores={"trajectory_store": file_store},
 )
 
 # Run the Production Flow
