@@ -38,6 +38,12 @@ class OpenMMSetMaker(Maker):
             output_dir = Path(output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
 
+        self.generator.topology_file = self.generator.topology_file.replace('.', '_')
+        self.generator.system_file = self.generator.system_file.replace('.', '_')
+        self.generator.integrator_file = self.generator.integrator_file.replace('.', '_')
+        self.generator.state_file = self.generator.state_file.replace('.', '_')
+        self.generator.contents_file = self.generator.contents_file.replace('.', '_')
+
         output_set = self.generator.get_input_set(input_mol_dicts, density, box)
 
         output_set.write_input(output_dir)

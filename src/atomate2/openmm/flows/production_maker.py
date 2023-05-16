@@ -61,7 +61,7 @@ class ProductionMaker(Maker):
         )
 
         nvt_job = self.nvt_maker.make(
-            input_set=pressure_job.output.calculation_output.input_set,
+            input_set=anneal_job.output.calculation_output.input_set,
             output_dir=output_dir / f"3_{self.nvt_maker.name.replace(' ', '_')}"
         )
 
