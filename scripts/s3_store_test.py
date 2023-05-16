@@ -5,6 +5,11 @@ index = MemoryStore(collection_name="index", key="blob_uuid")
 
 index.connect()
 
+index.update(
+    docs={"blob_uuid": "hello_world.txt"},
+    key="blob_uuid",
+)
+
 s3_store = S3Store(
     index=index,
     bucket="atomate2-openmm",
@@ -12,6 +17,7 @@ s3_store = S3Store(
     s3_profile="atomate2-openmm-dev",
     key="blob_uuid",
     s3_workers=1,
+    unpack_data=False,
 )
 
 s3_store.connect()
