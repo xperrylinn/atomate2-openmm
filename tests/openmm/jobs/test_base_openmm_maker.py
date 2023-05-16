@@ -1,6 +1,6 @@
 def test_base_openmm_maker(alchemy_input_set, job_store, task_details, caplog):
-    from src.atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
-    from src.atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+    from atomate2.openmm.jobs.base_openmm_maker import BaseOpenMMMaker
+    from atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
     from openmm.app.simulation import Simulation
     from tempfile import TemporaryDirectory
     from jobflow import run_locally

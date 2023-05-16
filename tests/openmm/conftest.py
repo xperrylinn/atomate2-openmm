@@ -1,5 +1,5 @@
 from pymatgen.io.openmm.sets import OpenMMSet
-from src.atomate2.openmm.constants import OpenMMConstants
+from atomate2.openmm.constants import OpenMMConstants
 from pathlib import Path
 import jobflow
 import pytest
@@ -56,7 +56,7 @@ def test_state_report_file(test_data_dir):
 
 @pytest.fixture(scope="function")
 def task_details():
-    from src.atomate2.openmm.schemas.task_details import TaskDetails
+    from atomate2.openmm.schemas.task_details import TaskDetails
 
     return TaskDetails(
         task_name="fixture",

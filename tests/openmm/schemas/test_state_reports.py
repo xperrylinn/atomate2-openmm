@@ -1,5 +1,5 @@
 def test_state_reports(test_state_report_file):
-    from src.atomate2.openmm.schemas.state_reports import StateReports
+    from atomate2.openmm.schemas.state_reports import StateReports
     import pandas as pd
 
     state_reporter = StateReports.from_state_file(test_state_report_file)
