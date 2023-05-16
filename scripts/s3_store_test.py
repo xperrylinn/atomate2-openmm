@@ -16,4 +16,9 @@ s3_store = S3Store(
 
 s3_store.connect()
 
+s3_store.update(
+    docs={"blob_uuid": "my_fancy_uid", "message": "hello world!"},
+    key="blob_uuid",
+)
+
 print(list(s3_store.query()))
