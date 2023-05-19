@@ -35,16 +35,23 @@ production_maker = ProductionMaker(
     anneal_maker=AnnealMaker(
         raise_temp_maker=TempChangeMaker(
             steps=1000,
-            temp_steps=100,
+            temp_steps=10,
+            final_temp=700,
+            state_reporter_interval=0,
+            dcd_reporter_interval=0,
         ),
         nvt_maker=NVTMaker(
             steps=100,
-            state_reporter_interval=10,
-            dcd_reporter_interval=10,
+            state_reporter_interval=0,
+            dcd_reporter_interval=0,
+            temperature=700,
         ),
         lower_temp_maker=TempChangeMaker(
             steps=1000,
             temp_steps=100,
+            final_temp=298,
+            state_reporter_interval=0,
+            dcd_reporter_interval=0,
         ),
     ),
     nvt_maker=NVTMaker(
@@ -72,7 +79,7 @@ atlas_mongo_store = MongoURIStore(
 
 # Setup FileStore for reporter files
 temp_dir = TemporaryDirectory()
-file_store = FileStore(path=temp_dir.name)
+file_store = FileStore(path=temp_dir.name, read_only=False)
 
 # Create JobStore
 job_store = JobStore(

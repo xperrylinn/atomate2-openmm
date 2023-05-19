@@ -12,6 +12,7 @@ dependencies:
   - atomate2
   - jobflow
   - pandas
+  - pymongo
   - pip:
       - git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
       - git+https://github.com/orionarcher/pymatgen@input_set_fi
