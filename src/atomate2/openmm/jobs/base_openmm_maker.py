@@ -37,7 +37,11 @@ def openmm_job(method: Callable):
         A decorated version of the make function that will generate OpenMM jobs.
     """
     # todo: add data keyword argument to specify where to write bigger files like trajectory files
-    return job(method=method, output_schema=OpenMMTaskDocument, trajectory_store=DCDReports)
+    return job(
+        method=method,
+        # output_schema=OpenMMTaskDocument, # commented out because schema does not match dict return schema
+        trajectory_store="trajectories",
+    )
 
 
 @dataclass
@@ -101,9 +105,12 @@ class BaseOpenMMMaker(Maker):
         task_details = self._run_openmm(sim)
 
         # Close the simulation
-        input_set = self._close_base_openmm_task(sim, input_set, sim.context, task_details, output_dir)
+        task_document = self._close_base_openmm_task(sim, input_set, sim.context, task_details, output_dir)
 
-        return input_set
+        return {
+            "doc_store": task_document,
+            "trajectories": task_document.calculation_output.dcd_reports
+        }
 
     def _setup_base_openmm_task(self, input_set: OpenMMSet, output_dir: Union[str, Path]) -> Simulation:
         """
@@ -181,7 +188,14 @@ class BaseOpenMMMaker(Maker):
         """
         raise NotImplementedError("_run_openmm should be implemented by each class that derives from BaseOpenMMMaker.")
 
-    def _close_base_openmm_task(self, sim: Simulation, input_set: OpenMMSet, context: Context, task_details: TaskDetails, output_dir: Union[str, Path]):
+    def _close_base_openmm_task(
+            self,
+            sim: Simulation,
+            input_set: OpenMMSet,
+            context: Context,
+            task_details: TaskDetails,
+            output_dir: Union[str, Path]
+    ) -> OpenMMTaskDocument:
 
         # Create an output OpenMMSet for CalculationOutput
         output_set = copy.deepcopy(input_set)
