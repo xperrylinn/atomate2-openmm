@@ -6,7 +6,8 @@ from src.atomate2.openmm.jobs.npt_maker import NPTMaker
 from src.atomate2.openmm.jobs.temp_change_maker import TempChangeMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from maggma.stores import MongoURIStore
-from maggma.stores.file_store import FileStore
+from maggma.stores.aws import S3Store
+from maggma.stores import MemoryStore
 from jobflow import run_locally
 from jobflow import JobStore
 from tempfile import TemporaryDirectory
@@ -79,12 +80,21 @@ atlas_mongo_store = MongoURIStore(
 
 # Setup FileStore for reporter files
 temp_dir = TemporaryDirectory()
-file_store = FileStore(path=temp_dir.name, read_only=False)
+index = MemoryStore(collection_name="index", key="blob_uuid")
+s3_store = S3Store(
+    index=index,
+    bucket="atomate2-openmm",
+    endpoint_url="https://s3.us-west-1.amazonaws.com",
+    s3_profile="atomate2-openmm-dev",
+    key="blob_uuid",
+    s3_workers=1,
+    unpack_data=True,
+)
 
 # Create JobStore
 job_store = JobStore(
     docs_store=atlas_mongo_store,
-    additional_stores={"trajectory_store": file_store},
+    additional_stores={"trajectory_store": s3_store},
 )
 
 # Run the Production Flow

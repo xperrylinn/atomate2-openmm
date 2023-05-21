@@ -67,7 +67,6 @@ s3_store = S3Store(
 job_store = JobStore(
     docs_store=atlas_mongo_store,
     additional_stores={"trajectory_store": s3_store},
-    # save={"trajectory_store": DCDReports}
 )
 
 # Run the Production Flow

@@ -101,11 +101,11 @@ class AnnealMaker(Maker):
             output_dir=output_dir,
         )
         nvt_job = self.nvt_maker.make(
-            input_set=raise_temp_job.output.calculation_output.output_set,
+            input_set=raise_temp_job.output["doc_store"].calculation_output.output_set,
             output_dir=output_dir,
         )
         lower_temp_job = self.lower_temp_maker.make(
-            input_set=nvt_job.output.calculation_output.output_set,
+            input_set=nvt_job.output["doc_store"].calculation_output.output_set,
             output_dir=output_dir,
         )
 
