@@ -1,14 +1,14 @@
 from pydantic import BaseModel, Field
 from pymatgen.io.openmm.sets import OpenMMSet
-from src.atomate2.openmm.schemas.physical_state import PhysicalState
-from src.atomate2.openmm.schemas.dcd_reports import DCDReports
-from src.atomate2.openmm.schemas.state_reports import StateReports
-from typing import List, Union
+from atomate2.openmm.schemas.physical_state import PhysicalState
+from atomate2.openmm.schemas.dcd_reports import DCDReports
+from atomate2.openmm.schemas.state_reports import StateReports
+from typing import Union
 import pathlib
 
 
 class CalculationOutput(BaseModel):
-    output_set: OpenMMSet = Field(None, description="Input set for the calculation")
+    input_set: OpenMMSet = Field(None, description="Input set for the calculation")
     physical_state: PhysicalState = Field(None, description="Physical state for the calculation")
     state_reports: StateReports = Field(None, description="State reporter output")
     dcd_reports: DCDReports = Field(None, description="DCD reporter output")
@@ -28,6 +28,6 @@ class CalculationOutput(BaseModel):
             input_set=input_set,
             physical_state=PhysicalState.from_input_set(input_set),
             # these need to be named consistently when they are written out
-            state_reporter=StateReports.from_state_file(output_dir / "???"),
-            dcd_reporter=DCDReports.from_dcd_file(output_dir / "???"),
+            state_reporter=StateReports.from_state_file(output_dir / "state_csv"),
+            dcd_reporter=DCDReports.from_dcd_file(output_dir / "trajectory_dcd"),
         )

@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 from atomate2.utils.datetime import datetime_str
-from src.atomate2.openmm.schemas.calculation_input import CalculationInput
-from src.atomate2.openmm.schemas.calculation_output import CalculationOutput
-from src.atomate2.openmm.schemas.task_details import TaskDetails
-from typing import List, Tuple
+from atomate2.openmm.schemas.calculation_input import CalculationInput
+from atomate2.openmm.schemas.calculation_output import CalculationOutput
+from atomate2.openmm.schemas.task_details import TaskDetails
+from typing import List
 
 
 class OpenMMTaskDocument(BaseModel):

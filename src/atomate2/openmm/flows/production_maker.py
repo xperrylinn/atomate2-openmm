@@ -1,12 +1,13 @@
-from src.atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
-from src.atomate2.openmm.jobs.npt_maker import NPTMaker
-from src.atomate2.openmm.jobs.nvt_maker import NVTMaker
-from src.atomate2.openmm.flows.anneal_maker import AnnealMaker
+from tempfile import TemporaryDirectory
+
+from atomate2.openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
+from atomate2.openmm.jobs.npt_maker import NPTMaker
+from atomate2.openmm.jobs.nvt_maker import NVTMaker
+from atomate2.openmm.flows.anneal_maker import AnnealMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from typing import Optional, Union
 from pathlib import Path
 from dataclasses import dataclass, field
-from pydantic import Field
 from jobflow import Maker, Flow
 
 
@@ -35,25 +36,33 @@ class ProductionMaker(Maker):
         -------
 
         """
+        if output_dir is None:
+            # TODO: will temp_dir close properly? When will it close?
+            temp_dir = TemporaryDirectory()
+            output_dir = temp_dir.name
+            output_dir = Path(output_dir)
+        else:
+            output_dir = Path(output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
 
         energy_job = self.energy_maker.make(
             input_set=input_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"0_{self.energy_maker.name.replace(' ', '_')}"
         )
 
         pressure_job = self.npt_maker.make(
             input_set=energy_job.output["doc_store"].calculation_output.output_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"1_{self.npt_maker.name.replace(' ', '_')}"
         )
 
         anneal_job = self.anneal_maker.make(
             input_set=pressure_job.output["doc_store"].calculation_output.output_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"2_{self.anneal_maker.name.replace(' ', '_')}"
         )
 
         nvt_job = self.nvt_maker.make(
             input_set=anneal_job.output["doc_store"].calculation_output.output_set,
-            output_dir=output_dir
+            output_dir=output_dir / f"3_{self.nvt_maker.name.replace(' ', '_')}"
         )
 
         my_flow = Flow(
@@ -63,7 +72,7 @@ class ProductionMaker(Maker):
                 anneal_job,
                 nvt_job,
             ],
-            output={"log": nvt_job, "test": anneal_job},
+            output={"log": nvt_job},
         )
 
         return my_flow
