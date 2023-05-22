@@ -1,15 +1,12 @@
-from atomate2.openmm import ProductionMaker
-from atomate2.openmm import AnnealMaker
-from atomate2.openmm import EnergyMinimizationMaker
-from atomate2.openmm import NVTMaker
-from atomate2.openmm import NPTMaker
-from atomate2.openmm import TempChangeMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from maggma.stores import MongoURIStore
 from maggma.stores.aws import S3Store
 from maggma.stores import MemoryStore
 from jobflow import run_locally
 from jobflow import JobStore
+from jobflow import Flow
+from atomate2.openmm import EnergyMinimizationMaker
+from atomate2.openmm import NVTMaker
 from tempfile import TemporaryDirectory
 import os
 
@@ -25,43 +22,17 @@ input_set = OpenMMSet.from_directory(
     contents_file="contents_json",
 )
 
-# Setup a Production Flow
-production_maker = ProductionMaker(
-    energy_maker=EnergyMinimizationMaker(),
-    npt_maker=NPTMaker(
-        steps=100,
-        state_reporter_interval=10,
-        dcd_reporter_interval=10,
-    ),
-    anneal_maker=AnnealMaker(
-        raise_temp_maker=TempChangeMaker(
-            steps=1000,
-            temp_steps=10,
-            final_temp=700,
-            state_reporter_interval=0,
-            dcd_reporter_interval=0,
-        ),
-        nvt_maker=NVTMaker(
-            steps=100,
-            state_reporter_interval=0,
-            dcd_reporter_interval=0,
-            temperature=700,
-        ),
-        lower_temp_maker=TempChangeMaker(
-            steps=1000,
-            temp_steps=100,
-            final_temp=298,
-            state_reporter_interval=0,
-            dcd_reporter_interval=0,
-        ),
-    ),
-    nvt_maker=NVTMaker(
-        steps=100,
-        state_reporter_interval=10,
-        dcd_reporter_interval=10,
-    ),
-)
-production_flow = production_maker.make(input_set=input_set)
+# Create jobs
+energy_minimization_job = EnergyMinimizationMaker().make(input_set=input_set)
+nvt_job = NVTMaker(
+    steps=100,
+    state_reporter_interval=10,
+    dcd_reporter_interval=10,
+    temperature=700,
+).make(input_set=energy_minimization_job.output["doc_store"].calculation_output.output_set)
+
+# Setup a Flow
+flow = Flow(jobs=[energy_minimization_job, nvt_job],)
 
 # Collect Atlas database credentials
 username, password = os.environ.get("ATLAS_USERNAME"), os.environ.get("ATLAS_PASSWORD")
@@ -78,7 +49,7 @@ atlas_mongo_store = MongoURIStore(
     database="atomate2-openmm"
 )
 
-# Setup FileStore for reporter files
+# Setup S3Store for reporter files
 temp_dir = TemporaryDirectory()
 index = MemoryStore(collection_name="index", key="blob_uuid")
 s3_store = S3Store(
@@ -98,6 +69,8 @@ job_store = JobStore(
 )
 
 # Run the Production Flow
-response = run_locally(flow=production_flow, store=job_store, ensure_success=True)
+response = run_locally(flow=flow, store=job_store, ensure_success=True)
 
-production_flow.draw_graph().show()
+print(list(s3_store.query()))
+
+flow.draw_graph().show()

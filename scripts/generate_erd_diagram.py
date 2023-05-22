@@ -1,4 +1,4 @@
-from atomate2.openmm.schemas.openmm_task_document import OpenMMTaskDocument
+from atomate2.openmm import OpenMMTaskDocument
 import erdantic as erd
 
 
