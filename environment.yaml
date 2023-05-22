@@ -5,7 +5,7 @@ dependencies:
   - python=3.8
   - pip
   - pytest
-#  - pymatgen
+  - pymatgen
   - openmm
   - openff-toolkit # pymatgen-io-openmm
   - MDAnalysis # pymatgen-io-openmm
@@ -15,5 +15,4 @@ dependencies:
   - pymongo
   - pip:
       - git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
-      - git+https://github.com/orionarcher/pymatgen@input_set_fi
       - erdantic
