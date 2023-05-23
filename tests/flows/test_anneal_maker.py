@@ -13,7 +13,7 @@ def test_anneal_maker(alchemy_input_set, job_store):
 
     anneal_flow = anneal_maker.make(input_set=alchemy_input_set)
 
-    responses = run_locally(flow=anneal_flow)
+    responses = run_locally(flow=anneal_flow, ensure_success=True)
 
     for job_response in responses.values():
         assert isinstance(job_response[1].output["doc_store"], OpenMMTaskDocument)

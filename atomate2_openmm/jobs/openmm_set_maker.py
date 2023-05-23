@@ -49,7 +49,7 @@ class OpenMMSetMaker(Maker):
             output_dir=str(output_dir),
             calculation_input=None,
             calculation_output=CalculationOutput(
-                input_set=output_set,
+                output_set=output_set,
                 physical_state=PhysicalState.from_input_set(output_set),
             ),
         )

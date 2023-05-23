@@ -108,11 +108,11 @@ class AnnealMaker(Maker):
             output_dir=output_dir / f"0_{self.raise_temp_maker.name.replace(' ', '_')}",
         )
         nvt_job = self.nvt_maker.make(
-            input_set=raise_temp_job.output["doc_store"].calculation_output.input_set,
+            input_set=raise_temp_job.output["doc_store"].calculation_output.output_set,
             output_dir=output_dir / f"1_{self.nvt_maker.name.replace(' ', '_')}"
         )
         lower_temp_job = self.lower_temp_maker.make(
-            input_set=nvt_job.output["doc_store"].calculation_output.input_set,
+            input_set=nvt_job.output["doc_store"].calculation_output.output_set,
             output_dir=output_dir / f"2_{self.lower_temp_maker.name.replace(' ', '_')}",
         )
 
