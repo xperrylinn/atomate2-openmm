@@ -7,6 +7,7 @@ def test_production_maker(alchemy_input_set, job_store):
     from atomate2_openmm.schemas.openmm_task_document import OpenMMTaskDocument
     from jobflow import run_locally
 
+    # Create the job makers
     anneal_maker = AnnealMaker.from_temps_and_steps(
         anneal_temp=310,
         final_temp=298,
@@ -36,9 +37,15 @@ def test_production_maker(alchemy_input_set, job_store):
         nvt_maker=nvt_maker,
     )
 
+    # Create the production flow
     production_flow = production_maker.make(input_set=alchemy_input_set)
 
-    responses = run_locally(flow=production_flow, ensure_success=True)
+    # Run the production flow
+    responses = run_locally(flow=production_flow, store=job_store, ensure_success=True)
 
+    # Validate linkage between
+    responses[production_flow.jobs[-1].uuid][1].output["trajectories"]
+
+    # Validate data type of doc store output as OpenMMTaskDocument
     for job_response in responses.values():
         assert isinstance(job_response[1].output["doc_store"], OpenMMTaskDocument)

@@ -1,16 +1,19 @@
 from pymatgen.io.openmm.sets import OpenMMSet
 from atomate2_openmm.constants import OpenMMConstants
+from maggma.stores import MemoryStore
 from pathlib import Path
-import jobflow
+from jobflow import JobStore
 import pytest
 import os
 
 
 @pytest.fixture(scope="function")
 def job_store():
-    job_store = jobflow.SETTINGS.JOB_STORE
+    job_store = JobStore(
+        docs_store=MemoryStore(),
+        additional_stores={"trajectory_store": MemoryStore()}
+    )
     return job_store
-
 
 @pytest.fixture(scope="session")
 def platform():
@@ -20,7 +23,6 @@ def platform():
 @pytest.fixture(scope="session")
 def platform_properties():
     return None
-
 
 @pytest.fixture(scope="session")
 def test_data_dir():

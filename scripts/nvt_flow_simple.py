@@ -7,6 +7,7 @@ from jobflow import JobStore
 from jobflow import Flow
 from atomate2_openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
 from atomate2_openmm.jobs.nvt_maker import NVTMaker
+from atomate2_openmm.schemas.dcd_reports import DCDReports
 from tempfile import TemporaryDirectory
 import os
 
@@ -71,8 +72,11 @@ job_store = JobStore(
 )
 
 # Run the Production Flow
-response = run_locally(flow=flow, store=job_store, ensure_success=True)
+responses = run_locally(flow=flow, store=job_store, ensure_success=True)
 
-print(list(s3_store.query()))
+responses[flow.jobs[-1].uuid][1].output["trajectories"]
+responses[flow.jobs[-1].uuid][1].output["doc_store"]
 
-flow.draw_graph().show()
+nvt_traj_blob_uuid = next(atlas_mongo_store.query(criteria={"uuid": flow.jobs[-1].uuid}))["output"]["trajectories"]["blob_uuid"]
+dcd_report = next(s3_store.query(criteria={"blob_uuid": nvt_traj_blob_uuid}))
+assert dcd_report["@class"], "DCDReports"

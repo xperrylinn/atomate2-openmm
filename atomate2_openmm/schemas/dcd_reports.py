@@ -5,6 +5,8 @@ class DCDReports(BaseModel):
     report_interval: int = Field(None, description="Report interval")
     enforce_periodic_box: bool = Field(None, description="Wrap particles or not")
     blob: bytes = Field(None, description="DCD trajectory blob")
+    location: str = Field(None, description="file path to document")
+    host: str = Field(None, description="host name")
 
     @classmethod
     def from_dcd_file(cls, dcd_file_path, report_interval, enforce_periodic_box):
