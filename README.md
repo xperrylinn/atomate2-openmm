@@ -6,7 +6,7 @@ An add-on package to atomate2 for OpenMM
 # Installation
 
 This package will eventually be distributed using conda-forge. For now follow see the development 
-environmentvsection.
+environment section.
 
 # Development Environment Setup
 
@@ -20,8 +20,8 @@ A Python3.8 environment setup using conda according to the steps below:
 
 ## Environment variables:
 
-- ATLAS_USERNAME: <username for MongoDB Atlas>
-- ATLAS_PASSWORD: <database password. See database access page.>
+- ATLAS_USERNAME: \<username for MongoDB Atlas\>
+- ATLAS_PASSWORD: \<database password. See database access page\>
 
 ## Configuration Files
 
@@ -38,7 +38,7 @@ aws_secret_access_key=<your AWS secret key>
 
 From root of repo, run the following command:
 
-`python -m pytest tests`
+`pytest .`
 
 # Contributing
 - Open A PR or file a GitHub issue
