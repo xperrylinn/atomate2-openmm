@@ -15,6 +15,7 @@ def job_store():
     )
     return job_store
 
+
 @pytest.fixture(scope="session")
 def platform():
     return "CPU"

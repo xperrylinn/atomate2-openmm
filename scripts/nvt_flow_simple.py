@@ -74,9 +74,6 @@ job_store = JobStore(
 # Run the Production Flow
 responses = run_locally(flow=flow, store=job_store, ensure_success=True)
 
-responses[flow.jobs[-1].uuid][1].output["trajectories"]
-responses[flow.jobs[-1].uuid][1].output["doc_store"]
-
 nvt_traj_blob_uuid = next(atlas_mongo_store.query(criteria={"uuid": flow.jobs[-1].uuid}))["output"]["trajectories"]["blob_uuid"]
 dcd_report = next(s3_store.query(criteria={"blob_uuid": nvt_traj_blob_uuid}))
 assert dcd_report["@class"], "DCDReports"

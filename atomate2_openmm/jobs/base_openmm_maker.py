@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union, Optional
 from jobflow import job, Maker, Job
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -14,7 +14,6 @@ from atomate2_openmm.schemas.calculation_output import CalculationOutput
 from atomate2_openmm.constants import OpenMMConstants
 from atomate2_openmm.logger import logger
 from openmm import Platform, Context
-from typing import Union, Optional
 from openmm.app import DCDReporter, StateDataReporter, PDBReporter
 from openmm.app.simulation import Simulation
 from tempfile import TemporaryDirectory, NamedTemporaryFile
