@@ -24,7 +24,7 @@ jobs:
 
       - name: Create conda environment from file
         run: |
-          conda create -n myenv python=3.8 --yes -f environment.yaml
+          conda create -n myenv python=3.8 -f environment.yaml --yes
           conda activate myenv
 
       - name: Install other dependencies
