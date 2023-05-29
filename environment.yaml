@@ -16,3 +16,4 @@ dependencies:
   - pip:
       - git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
       - erdantic
+      - pytest-cov
