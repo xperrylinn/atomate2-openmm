@@ -25,6 +25,7 @@ def platform():
 def platform_properties():
     return None
 
+
 @pytest.fixture(scope="session")
 def test_data_dir():
     module_dir = Path(__file__).resolve().parent
@@ -58,16 +59,15 @@ def test_state_report_file(test_data_dir):
 
 
 @pytest.fixture(scope="function")
-def task_details():
+def task_details(platform):
     from atomate2_openmm.schemas.task_details import TaskDetails
 
     return TaskDetails(
         task_name="fixture",
         task_kwargs={"fixture": "fixture"},
-        platform_kwargs={"platform": "CPU"},
+        platform_kwargs={"platform": platform},
         total_steps=0,
     )
-
 
 
 @pytest.fixture(scope="function")

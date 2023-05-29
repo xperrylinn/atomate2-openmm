@@ -1,4 +1,4 @@
-def test_production_maker(alchemy_input_set, job_store):
+def test_production_maker(alchemy_input_set, job_store, test_output_dir):
     from atomate2_openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
     from atomate2_openmm.jobs.nvt_maker import NVTMaker
     from atomate2_openmm.jobs.npt_maker import NPTMaker
@@ -43,7 +43,7 @@ def test_production_maker(alchemy_input_set, job_store):
     )
 
     # Create the production flow
-    production_flow = production_maker.make(input_set=alchemy_input_set)
+    production_flow = production_maker.make(input_set=alchemy_input_set, output_dir=test_output_dir)
 
     # Run the production flow
     responses = run_locally(flow=production_flow, store=job_store, ensure_success=True)

@@ -1,4 +1,4 @@
-def test_task_details():
+def test_task_details(platform, platform_properties):
     from atomate2_openmm.schemas.task_details import TaskDetails
 
     task_details = TaskDetails(
@@ -9,8 +9,8 @@ def test_task_details():
             "frequency": 10,
         },
         platform_kwargs={
-            "platform": "CPU",
-            "platform_properties": None,
+            "platform": platform,
+            "platform_properties": platform_properties,
         },
         total_steps=1000,
     )
