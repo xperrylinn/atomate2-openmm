@@ -17,28 +17,37 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          auto_update_conda: false
-          miniconda_version: latest
+          activate-environment: anaconda-client-env
+          environment-file: environment.yaml
+          auto-activate-base: false
+      - run: |
+          conda info
+          conda list
 
-      - name: Create Python environment
-        run: |
-          conda create -n myenv python=3.8 --yes
-          conda activate myenv
-
-      - name: Install conda dependencies
-        run: |
-          conda install -c conda-forge pip pytest openmm openff-toolkit MDAnalysis atomate2 jobflow pandas pymongo
-
-      - name: Install pip dependencies
-        run: |
-          pip install pymatgen
-          pip install git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
-          pip install erdantic
-          pip install pytest-cov
-          pip install .
+#      - name: Set up Miniconda
+#        uses: conda-incubator/setup-miniconda@v2
+#        with:
+#          auto_update_conda: false
+#          miniconda_version: latest
+#
+#      - name: Create Python environment
+#        run: |
+#          conda create -n myenv python=3.8 --yes
+#          conda activate myenv
+#
+#      - name: Install conda dependencies
+#        run: |
+#          conda install -c conda-forge pip pytest openmm openff-toolkit MDAnalysis atomate2 jobflow pandas pymongo
+#
+#      - name: Install pip dependencies
+#        run: |
+#          pip install pymatgen
+#          pip install git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
+#          pip install erdantic
+#          pip install pytest-cov
+#          pip install .
 
       - name: Run tests
         run: |
