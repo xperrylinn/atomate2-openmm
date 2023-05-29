@@ -26,11 +26,16 @@ jobs:
 
       - name: Create conda environment from file
         run: |
-          conda env create -f environment.yaml --force
+          conda create -n myenv python=3.=8
           conda activate myenv
+          conda install -c conda-forge pip pytest openmm openff-toolkit MDAnalysis atomate2 jobflow pandas pymongo
 
       - name: Install other dependencies
         run: |
+          pip install pymatgen
+          pip install git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
+          pip install erdantic
+          pip install pytest-cov
           pip install .
 
       - name: Run tests
