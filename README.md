@@ -34,13 +34,21 @@ aws_secret_access_key=<your AWS secret key>
 
 ```
 
+
+
+# Contributing
+
+- Open A PR or file a GitHub issue
+- Numpy style documentation
+- Formatting with black
+
 ## Running Test
 
 From root of repo, run the following command:
 
 `pytest .`
 
-# Contributing
-- Open A PR or file a GitHub issue
-- Numpy style documentation
-- Formatting with black
+All PRs must maintain 100% testing coverage. To confirm full test coverage run the following command from the root:
+
+`pytest --cov=tests --cov-report term-missing`
+

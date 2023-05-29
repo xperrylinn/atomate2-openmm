@@ -4,6 +4,8 @@ def test_base_openmm_maker(alchemy_input_set, job_store, task_details, caplog):
     from openmm.app.simulation import Simulation
     from tempfile import TemporaryDirectory
     from jobflow import run_locally
+    import pytest
+
 
     base_job_maker = BaseOpenMMMaker(
         state_reporter_interval=0,
@@ -32,11 +34,8 @@ def test_base_openmm_maker(alchemy_input_set, job_store, task_details, caplog):
         assert isinstance(task_doc, OpenMMTaskDocument)
 
     # Validate raising of RuntimeError raised because of NotImplementedError
-    try:
+    with pytest.raises(RuntimeError):
         run_locally(base_job, store=job_store, ensure_success=True)
-        assert False
-    except RuntimeError:
-        assert True
 
     # Validate NotImplementedError in captured logs
     assert "NotImplementedError" in caplog.record_tuples[2][2]
