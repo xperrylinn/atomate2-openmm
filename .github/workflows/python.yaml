@@ -26,7 +26,6 @@ jobs:
 
       - name: Create conda environment from file
         run: |
-          ls /home/runner/work/atomate2-openmm/atomate2-openmm/
           conda env create -f environment.yaml --force
           conda activate myenv
 
