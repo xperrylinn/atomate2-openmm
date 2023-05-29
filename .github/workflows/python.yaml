@@ -26,7 +26,7 @@ jobs:
 
       - name: Create conda environment from file
         run: |
-          conda create -n myenv python=3.=8
+          conda create -n myenv python=3.8
           conda activate myenv
           conda install -c conda-forge pip pytest openmm openff-toolkit MDAnalysis atomate2 jobflow pandas pymongo
 
