@@ -24,7 +24,7 @@ jobs:
 
       - name: Create conda environment from file
         run: |
-          conda env create -f environment.yaml --force
+          conda env create -f ../environment.yaml --force
           conda activate myenv
 
       - name: Install other dependencies
