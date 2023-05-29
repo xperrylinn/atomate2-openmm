@@ -24,6 +24,10 @@ jobs:
           source $HOME/miniconda/etc/profile.d/conda.sh
           conda update --all --yes
 
+      - name: Configure shell for conda
+        run: |
+          conda init bash  # Replace 'bash' with your shell name (e.g., 'bash', 'zsh', 'fish')
+
       - name: Create conda environment from file
         run: |
           conda create -n myenv python=3.8 --yes
