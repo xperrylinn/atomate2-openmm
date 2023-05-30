@@ -14,8 +14,9 @@ jobs:
           python-version: 3.8
       - name: Install conda dependencies
         run: |
+          source ~/anaconda3/etc/profile.d/conda.sh
           $CONDA/bin/conda create -n myenv python=3.8
-          $CONDA/bin/conda init bash
+#          $CONDA/bin/conda init bash
           $CONDA/bin/conda activate myenv
           $CONDA/bin/conda install -c conda-forge pip --yes
           $CONDA/bin/conda install -c conda-forge openmm --yes
