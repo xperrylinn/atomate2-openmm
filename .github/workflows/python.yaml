@@ -24,7 +24,7 @@ jobs:
           $CONDA/bin/conda install -c conda-forge jobflow --yes
           $CONDA/bin/conda install -c conda-forge pymongo --yes
       -name: Install pip dependencies
-        run |
+        run: |
           $CONDA/bin/conda activate base
           pip install pymatgen
           pip install git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
