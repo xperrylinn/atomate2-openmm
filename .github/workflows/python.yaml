@@ -14,6 +14,7 @@ jobs:
           python-version: 3.8
       - name: Install conda dependencies
         run: |
+          ehco YOOO $CONDA
           source ~/anaconda3/etc/profile.d/conda.sh
           $CONDA/bin/conda create -n myenv python=3.8
 #          $CONDA/bin/conda init bash
