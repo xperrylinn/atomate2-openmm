@@ -40,6 +40,22 @@ jobs:
       - name: Install pip pymatgen-io-openmm
         shell: bash -l {0}
         run: |
+          pip install pytest
+      - name: Install pip pytest
+        shell: bash -l {0}
+        run: |
+          pip install pytest
+      - name: Install pip pytest-cov
+        shell: bash -l {0}
+        run: |
+          pip install pytest-cov
+      - name: Install pip pandas
+        shell: bash -l {0}
+        run: |
+          pip install pandas
+      - name: Install pip pymatgen-io-openmm
+        shell: bash -l {0}
+        run: |
           pip install .
       - shell: bash -l {0}
         run: |
