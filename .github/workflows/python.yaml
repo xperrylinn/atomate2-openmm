@@ -37,6 +37,10 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install git+https://github.com/orionarcher/pymatgen-io-openmm.git
+      - name: Install pip pymatgen-io-openmm
+        shell: bash -l {0}
+        run: |
+          pip install .
       - shell: bash -l {0}
         run: |
           conda info
