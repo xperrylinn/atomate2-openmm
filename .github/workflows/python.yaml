@@ -16,11 +16,11 @@ jobs:
       - name: Install conda dependencies
         shell: bash -l {0}
         run: |
-          conda install openmm
-          conda install openff-toolkit
-          conda install MDAnalysis
-          conda install atomate2
-          conda install jobflow
+          conda install -c conda-forge openmm
+          conda install -c conda-forge openff-toolkit
+          conda install -c conda-forge MDAnalysis
+          conda install -c conda-forge atomate2
+          conda install -c conda-forge jobflow
       - name: Install dependency 0
         shell: bash -l {0}
         run: |
