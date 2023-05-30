@@ -4,16 +4,15 @@ channels:
 dependencies:
   - python=3.8
   - pip
-  - pytest
   - openmm
   - openff-toolkit # pymatgen-io-openmm
   - MDAnalysis # pymatgen-io-openmm
   - atomate2
   - jobflow
-  - pandas
-  - pymongo
   - pip:
+      - pytest
+      - pytest-cov
+      - pandas
       - pymatgen
       - pymatgen-io-openmm @ git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
       - erdantic
-      - pytest-cov

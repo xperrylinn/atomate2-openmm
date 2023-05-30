@@ -13,15 +13,27 @@ jobs:
           activate-environment: test
           python-version: 3.8
           auto-activate-base: false
-      - name: Install conda dependencies
+      - name: Install conda openmm
         shell: bash -l {0}
         run: |
           conda install -c conda-forge openmm
+      - name: Install conda openff-toolkit
+        shell: bash -l {0}
+        run: |
           conda install -c conda-forge openff-toolkit
+      - name: Install conda MDAnalysis
+        shell: bash -l {0}
+        run: |
           conda install -c conda-forge MDAnalysis
+      - name: Install conda atomate2
+        shell: bash -l {0}
+        run: |
           conda install -c conda-forge atomate2
+      - name: Install conda jobflow
+        shell: bash -l {0}
+        run: |
           conda install -c conda-forge jobflow
-      - name: Install dependency 0
+      - name: Install pip pymatgen-io-openmm
         shell: bash -l {0}
         run: |
           pip install git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
