@@ -14,7 +14,6 @@ jobs:
           python-version: 3.8
       - name: Install conda dependencies
         run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
           $CONDA/bin/conda create -n myenv python=3.8
           $CONDA/bin/conda init bash
           $CONDA/bin/conda activate myenv
