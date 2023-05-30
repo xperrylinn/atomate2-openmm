@@ -15,7 +15,8 @@ jobs:
       - name: Install conda dependencies
         run: |
           # $CONDA is an environment variable pointing to the root of the miniconda directory
-          $CONDA/bin/conda activate
+          $CONDA/bin/conda create -n myenv python=3.8
+          $CONDA/bin/conda activate myenv
           $CONDA/bin/conda install -c conda-forge pip --yes
           $CONDA/bin/conda install -c conda-forge openmm --yes
           $CONDA/bin/conda install -c conda-forge openff-toolkit --yes
@@ -25,7 +26,7 @@ jobs:
           $CONDA/bin/conda install -c conda-forge pymongo --yes
       - name: Install pip dependencies
         run: |
-          $CONDA/bin/conda activate base
+          $CONDA/bin/conda activate myenv
           pip install pymatgen
           pip install git+ssh://git@github.com/orionarcher/pymatgen-io-openmm.git
           pip install erdantic
