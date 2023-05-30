@@ -11,7 +11,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: test
-          python-version: 3.8
+          python-version: 3.9
           auto-activate-base: false
       - name: Install conda openmm
         shell: bash -l {0}
