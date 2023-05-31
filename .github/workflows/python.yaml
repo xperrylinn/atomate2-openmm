@@ -20,7 +20,7 @@ jobs:
       - name: Install conda openff-toolkit
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge openff-toolkit==0.12.1
+          conda install -c conda-forge openff-toolkit
       - name: Install conda MDAnalysis
         shell: bash -l {0}
         run: |
