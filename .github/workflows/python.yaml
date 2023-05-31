@@ -16,23 +16,23 @@ jobs:
       - name: Install conda openmm
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge openmm
+          conda install -c conda-forge openmm==openmm==8.0.0
       - name: Install conda openff-toolkit
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge openff-toolkit
+          conda install -c conda-forge openff-toolkit==0.12.1
       - name: Install conda MDAnalysis
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge MDAnalysis
+          conda install -c conda-forge MDAnalysis==2.4.3
       - name: Install conda atomate2
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge atomate2
+          conda install -c conda-forge atomate2==0.0.10
       - name: Install conda jobflow
         shell: bash -l {0}
         run: |
-          conda install -c conda-forge jobflow
+          conda install -c conda-forge jobflow==0.1.11
       - name: Install pip pymatgen-io-openmm
         shell: bash -l {0}
         run: |
