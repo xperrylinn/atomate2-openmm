@@ -20,6 +20,9 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install .
+      - shell: bash -l {0}
+        run: |
+          mamba list
       - name: Run pytest
         shell: bash -l {0}
         run: |
