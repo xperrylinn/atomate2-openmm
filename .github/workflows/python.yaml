@@ -22,7 +22,7 @@ jobs:
           pip install .
       - shell: bash -l {0}
         run: |
-          mamba info
+          mamba --version
           mamba list
       - name: Run pytest
         shell: bash -l {0}
