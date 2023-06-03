@@ -1,6 +1,6 @@
 from maggma.stores import MemoryStore
 from jobflow import JobStore, job, run_locally
-from pathlib import Path
+
 
 additional_data = {"atomate2-openmm": "awesome", "value": 1}
 data = {"hello world": "123abc"}

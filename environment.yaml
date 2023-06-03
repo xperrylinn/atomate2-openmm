@@ -13,5 +13,4 @@ dependencies:
       - pytest
       - pytest-cov
       - pandas
-#      - pymatgen
       - pymatgen-io-openmm @ git+https://github.com/orionarcher/pymatgen-io-openmm.git
