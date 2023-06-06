@@ -39,11 +39,12 @@ doc_store = MemoryStore()
 trajectory_store = MemoryStore()
 job_store = JobStore(docs_store=doc_store, additional_stores={"trajectory_store": trajectory_store})
 
+# Draw the graph before running as it depends on output references
+flow.draw_graph().show()
+
 # Run the Production Flow
 responses = run_locally(flow=flow, store=job_store, ensure_success=True)
 
 nvt_traj_blob_uuid = next(doc_store.query(criteria={"uuid": flow.jobs[-1].uuid}))["output"]["trajectories"]["blob_uuid"]
 dcd_report = next(trajectory_store.query(criteria={"blob_uuid": nvt_traj_blob_uuid}))
 assert dcd_report["@class"], "DCDReports"
-
-flow.draw_graph(figsize=(8, 8)).show()

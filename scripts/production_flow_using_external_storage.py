@@ -1,14 +1,15 @@
+from atomate2_openmm.flows.production_maker import ProductionMaker
+from atomate2_openmm.flows.anneal_maker import AnnealMaker
+from atomate2_openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
+from atomate2_openmm.jobs.nvt_maker import NVTMaker
+from atomate2_openmm.jobs.npt_maker import NPTMaker
+from atomate2_openmm.jobs.temp_change_maker import TempChangeMaker
 from pymatgen.io.openmm.sets import OpenMMSet
 from maggma.stores import MongoURIStore
 from maggma.stores.aws import S3Store
 from maggma.stores import MemoryStore
 from jobflow import run_locally
 from jobflow import JobStore
-from jobflow import Flow
-from atomate2_openmm.jobs.energy_minimization_maker import EnergyMinimizationMaker
-from atomate2_openmm.jobs.nvt_maker import NVTMaker
-from atomate2_openmm.schemas.dcd_reports import DCDReports
-from tempfile import TemporaryDirectory
 import os
 
 
@@ -25,17 +26,43 @@ input_set = OpenMMSet.from_directory(
     contents_file="contents_json",
 )
 
-# Create jobs
-energy_minimization_job = EnergyMinimizationMaker().make(input_set=input_set)
-nvt_job = NVTMaker(
-    steps=100,
-    state_reporter_interval=10,
-    dcd_reporter_interval=10,
-    temperature=700,
-).make(input_set=energy_minimization_job.output["doc_store"].calculation_output.output_set)
-
-# Setup a Flow
-flow = Flow(jobs=[energy_minimization_job, nvt_job],)
+# Setup a Production Flow
+production_maker = ProductionMaker(
+    energy_maker=EnergyMinimizationMaker(),
+    npt_maker=NPTMaker(
+        steps=100,
+        state_reporter_interval=10,
+        dcd_reporter_interval=10,
+    ),
+    anneal_maker=AnnealMaker(
+        raise_temp_maker=TempChangeMaker(
+            steps=1000,
+            temp_steps=10,
+            final_temp=700,
+            state_reporter_interval=0,
+            dcd_reporter_interval=0,
+        ),
+        nvt_maker=NVTMaker(
+            steps=100,
+            state_reporter_interval=0,
+            dcd_reporter_interval=0,
+            temperature=700,
+        ),
+        lower_temp_maker=TempChangeMaker(
+            steps=1000,
+            temp_steps=100,
+            final_temp=298,
+            state_reporter_interval=0,
+            dcd_reporter_interval=0,
+        ),
+    ),
+    nvt_maker=NVTMaker(
+        steps=100,
+        state_reporter_interval=10,
+        dcd_reporter_interval=10,
+    ),
+)
+production_flow = production_maker.make(input_set=input_set)
 
 # Collect Atlas database credentials
 username, password = os.environ.get("ATLAS_USERNAME"), os.environ.get("ATLAS_PASSWORD")
@@ -52,8 +79,7 @@ atlas_mongo_store = MongoURIStore(
     database="atomate2-openmm"
 )
 
-# Setup S3Store for reporter files
-temp_dir = TemporaryDirectory()
+# Setup S3 store for reporter blobs
 index = MemoryStore(collection_name="index", key="blob_uuid")
 s3_store = S3Store(
     index=index,
@@ -72,11 +98,7 @@ job_store = JobStore(
 )
 
 # Draw the graph before running as it depends on output references
-flow.draw_graph().show()
+production_flow.draw_graph().show()
 
 # Run the Production Flow
-responses = run_locally(flow=flow, store=job_store, ensure_success=True)
-
-nvt_traj_blob_uuid = next(atlas_mongo_store.query(criteria={"uuid": flow.jobs[-1].uuid}))["output"]["trajectories"]["blob_uuid"]
-dcd_report = next(s3_store.query(criteria={"blob_uuid": nvt_traj_blob_uuid}))
-assert dcd_report["@class"], "DCDReports"
+response = run_locally(flow=production_flow, store=job_store, ensure_success=True)
