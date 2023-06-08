@@ -1,0 +1,26 @@
+name: Python Package Using Anaconda
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: 'latest'
+          environment-file: environment.yaml
+          cache-environment: true
+          init-shell: >-
+            bash
+            powershell
+      - name: Install project
+        shell: bash -l {0}
+        run: |
+          pip install .
+      - name: Run pytest
+        shell: bash -l {0}
+        run: |
+          pytest
