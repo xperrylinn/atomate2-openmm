@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class OpenMMConstants(Enum):
+class Atomate2OpenMMConstants(Enum):
     TOPOLOGY_PDD_FILE_NAME: str = "topology_pdb"
     STATE_XML_FILE_NAME: str = "state_xml"
     STATE_REPORT_CSV_FILE_NAME: str = "state_csv"
@@ -18,4 +18,4 @@ class OpenMMConstants(Enum):
         "volume",
         "density"
     ]
-    MAX_DOCUMENT_SIZE = 16  # MB
+    MAX_DOCUMENT_BYTE_SIZE = 16793600  # Max size of a MongoDB document

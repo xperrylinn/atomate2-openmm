@@ -11,13 +11,14 @@ from atomate2_openmm.schemas.dcd_reports import DCDReports
 from atomate2_openmm.schemas.state_reports import StateReports
 from atomate2_openmm.schemas.calculation_input import CalculationInput
 from atomate2_openmm.schemas.calculation_output import CalculationOutput
-from atomate2_openmm.constants import OpenMMConstants
+from atomate2_openmm.constants import Atomate2OpenMMConstants
 from atomate2_openmm.logger import logger
 from openmm import Platform, Context
 from openmm.app import DCDReporter, StateDataReporter, PDBReporter
 from openmm.app.simulation import Simulation
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 import copy
+import sys
 import os
 
 
@@ -89,6 +90,13 @@ class BaseOpenMMMaker(Maker):
             Path to directory for writing state and DCD trajectory files. This could be a temp or
             persistent directory.
         """
+        # Check size of OpenMMSet input
+        size_of_openmm_set = sys.getsizeof(input_set)
+        if size_of_openmm_set > Atomate2OpenMMConstants.MAX_DOCUMENT_BYTE_SIZE.value:
+            logger.critical(f"The provided OpenMMSet contains {size_of_openmm_set} Bytes and exceeds the memory limit "
+                            f"of MongoDB {Atomate2OpenMMConstants.MAX_DOCUMENT_BYTE_SIZE.value} Bytes for an "
+                            f"individual document. Failure is likely to occur.")
+
         # Define output_dir if as a temporary directory if not provided
         temp_dir = None     # Define potential pointer to temporary directory to keep in scope
         if output_dir is None:
@@ -145,7 +153,7 @@ class BaseOpenMMMaker(Maker):
 
         # Add reporters
         if self.dcd_reporter_interval > 0:
-            dcd_file_name = os.path.join(output_dir, OpenMMConstants.TRAJECTORY_DCD_FILE_NAME.value)
+            dcd_file_name = os.path.join(output_dir, Atomate2OpenMMConstants.TRAJECTORY_DCD_FILE_NAME.value)
             dcd_reporter = DCDReporter(
                 file=dcd_file_name,
                 reportInterval=self.dcd_reporter_interval,
@@ -153,7 +161,7 @@ class BaseOpenMMMaker(Maker):
             logger.info(f"Created DCDReporter that will report to {dcd_file_name}")
             sim.reporters.append(dcd_reporter)
         if self.state_reporter_interval > 0:
-            state_file_name = os.path.join(output_dir, OpenMMConstants.STATE_REPORT_CSV_FILE_NAME.value)
+            state_file_name = os.path.join(output_dir, Atomate2OpenMMConstants.STATE_REPORT_CSV_FILE_NAME.value)
             state_reporter = StateDataReporter(
                 file=state_file_name,
                 reportInterval=self.state_reporter_interval,
