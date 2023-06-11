@@ -1,5 +1,5 @@
 from pymatgen.io.openmm.sets import OpenMMSet
-from atomate2_openmm.constants import OpenMMConstants
+from atomate2_openmm.constants import Atomate2OpenMMConstants
 from maggma.stores import MemoryStore
 from pathlib import Path
 from jobflow import JobStore
@@ -43,11 +43,11 @@ def alchemy_input_set_dir(test_data_dir):
 def alchemy_input_set(alchemy_input_set_dir):
     input_set = OpenMMSet.from_directory(
         directory=alchemy_input_set_dir,
-        topology_file=OpenMMConstants.TOPOLOGY_PDD_FILE_NAME.value,
-        state_file=OpenMMConstants.STATE_XML_FILE_NAME.value,
-        system_file=OpenMMConstants.SYSTEM_XML_FILE_NAME.value,
-        integrator_file=OpenMMConstants.INTEGRATOR_XML_FILE_NAME.value,
-        contents_file=OpenMMConstants.CONTENTS_JOSN_FILE_NAME.value,
+        topology_file=Atomate2OpenMMConstants.TOPOLOGY_PDD_FILE_NAME.value,
+        state_file=Atomate2OpenMMConstants.STATE_XML_FILE_NAME.value,
+        system_file=Atomate2OpenMMConstants.SYSTEM_XML_FILE_NAME.value,
+        integrator_file=Atomate2OpenMMConstants.INTEGRATOR_XML_FILE_NAME.value,
+        contents_file=Atomate2OpenMMConstants.CONTENTS_JOSN_FILE_NAME.value,
     )
     return input_set
 
