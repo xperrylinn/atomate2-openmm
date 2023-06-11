@@ -18,3 +18,4 @@ class OpenMMConstants(Enum):
         "volume",
         "density"
     ]
+    MAX_DOCUMENT_SIZE = 16  # MB

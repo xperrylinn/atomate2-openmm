@@ -3,10 +3,19 @@
 # atomate2-openmm
 An add-on package to atomate2 for OpenMM
 
-# Installation
+# Manifest
 
-This package will eventually be distributed using conda-forge. For now follow see the development 
-environment section.
+## Scripts
+- additional_stores_test_with_memory_store.py: small example of using additional stores in JobFlow API
+- atlas_clear_collection.py: deletes objects in collection
+- atlas_connection.py: test connection to MongoDB Atlas
+- boto3_s3.py - test connection to S3 bucket
+- s3_store.py: test Maggma S3 store
+- generate_erd_diagram.py: script for generating ERD diagrams of PyDantic data models
+- nvt_flow_simple_using_external_storage.py: simple NVT simulation Flow using MongoDB Atlas and S3 storage
+- nvt_flow_simple_using_memory_store.py: simple NVT simulation Flow using local memory storage
+- production_flow_using_external_storage.py: production Flow using MongoDB Atlas and S3 storage
+- production_flow_using_memory_storage.py: production Flow using local memory storage
 
 # Development Environment Setup
 

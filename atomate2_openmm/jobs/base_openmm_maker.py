@@ -35,7 +35,6 @@ def openmm_job(method: Callable):
     callable
         A decorated version of the make function that will generate OpenMM jobs.
     """
-    # todo: add data keyword argument to specify where to write bigger files like trajectory files
     return job(
         method=method,
         # output_schema=OpenMMTaskDocument, # commented out because schema does not match dict return schema
