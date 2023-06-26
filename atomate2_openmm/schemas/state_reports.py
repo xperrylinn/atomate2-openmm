@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Union
-from atomate2_openmm.constants import OpenMMConstants
+from atomate2_openmm.constants import Atomate2OpenMMConstants
 import numpy as np
 import pathlib
 from atomate2_openmm.logger import logger
@@ -26,6 +26,6 @@ class StateReports(BaseModel):
         else:
             # Extract the data columns and set the corresponding class fields
             attributes = {
-                attribute: data[:, i].tolist() for i, attribute in enumerate(OpenMMConstants.STATE_REPORT_SCHEMA.value)
+                attribute: data[:, i].tolist() for i, attribute in enumerate(Atomate2OpenMMConstants.STATE_REPORT_SCHEMA.value)
             }
             return StateReports(**attributes)

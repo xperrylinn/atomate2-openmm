@@ -36,7 +36,6 @@ class ProductionMaker(Maker):
 
         """
         if output_dir is None:
-            # TODO: will temp_dir close properly? When will it close?
             temp_dir = TemporaryDirectory()
             output_dir = temp_dir.name
             output_dir = Path(output_dir)
@@ -64,14 +63,14 @@ class ProductionMaker(Maker):
             output_dir=output_dir / f"3_{self.nvt_maker.name.replace(' ', '_')}"
         )
 
-        my_flow = Flow(
+        flow = Flow(
             [
                 energy_job,
                 pressure_job,
                 anneal_job,
                 nvt_job,
             ],
-            output={"log": nvt_job},
+            output=nvt_job.output,
         )
 
-        return my_flow
+        return flow

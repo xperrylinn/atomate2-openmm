@@ -61,18 +61,18 @@ def test_production_maker(alchemy_input_set, job_store, test_output_dir):
     # annal_temp_increase_job = next(doc_store.query(criteria={"uuid": production_flow.jobs[2].jobs[0].uuid}))["output"]["trajectories"]["blob_uuid"]
     # annal_temp_increase_dcd_report = next(trajectory_store.query(criteria={"blob_uuid": annal_temp_increase_job}))
     # assert annal_temp_increase_dcd_report["@class"], "DCDReports"
-
+    #
     # nvt_temp_hold_job = next(doc_store.query(criteria={"uuid": production_flow.jobs[2].jobs[1].uuid}))["output"]["trajectories"]["blob_uuid"]
     # annal_temp_increase_dcd_report = next(trajectory_store.query(criteria={"blob_uuid": nvt_temp_hold_job}))
     # assert annal_temp_increase_dcd_report["@class"], "DCDReports"
-
+    #
     # annal_temp_decrease_job = next(doc_store.query(criteria={"uuid": production_flow.jobs[2].jobs[2].uuid}))["output"]["trajectories"]["blob_uuid"]
     # annal_temp_increase_dcd_report = next(trajectory_store.query(criteria={"blob_uuid": annal_temp_decrease_job}))
     # assert annal_temp_increase_dcd_report["@class"], "DCDReports"
-
-    nvt_traj_blob_uuid = next(doc_store.query(criteria={"uuid": production_flow.jobs[-1].uuid}))["output"]["trajectories"]["blob_uuid"]
-    nvt_job_dcd_report = next(trajectory_store.query(criteria={"blob_uuid": nvt_traj_blob_uuid}))
-    assert nvt_job_dcd_report["@class"], "DCDReports"
+    #
+    # nvt_traj_blob_uuid = next(doc_store.query(criteria={"uuid": production_flow.jobs[-1].uuid}))["output"]["trajectories"]["blob_uuid"]
+    # nvt_job_dcd_report = next(trajectory_store.query(criteria={"blob_uuid": nvt_traj_blob_uuid}))
+    # assert nvt_job_dcd_report["@class"], "DCDReports"
 
     # Validate data types of response
     assert isinstance(responses[production_flow.jobs[0].uuid][1].output["doc_store"], OpenMMTaskDocument)

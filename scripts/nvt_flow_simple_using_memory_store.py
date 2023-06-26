@@ -25,11 +25,11 @@ input_set = OpenMMSet.from_directory(
 # Create jobs
 energy_minimization_job = EnergyMinimizationMaker().make(input_set=input_set)
 nvt_job = NVTMaker(
-    steps=100,
+    steps=10000,
     state_reporter_interval=10,
     dcd_reporter_interval=10,
     temperature=700,
-).make(input_set=energy_minimization_job.output["doc_store"].calculation_output.output_set)
+).make(input_set=energy_minimization_job.output["doc_store"].calculation_output.output_set, output_dir="/Users/xperrylinn/Desktop/demo_data/nvt_simple_flow")
 
 # Setup a Flow
 flow = Flow(jobs=[energy_minimization_job, nvt_job],)

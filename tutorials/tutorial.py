@@ -1,12 +1,13 @@
 from pymatgen.io.openmm.schema import InputMoleculeSpec, Geometry
 from pymatgen.io.openmm.generators import OpenMMSolutionGen
-
+import time
 
 openmm_set_gen = OpenMMSolutionGen(default_charge_method="mmff94")
 
 partial_charge_scalers = [0.7, 0.8, 0.9, 1.0]
 
 for charge_scaler in partial_charge_scalers:
+    start_time = time.time()
     ec_mols = InputMoleculeSpec(
         smile="C1COC(=O)O1",
         count=200,
@@ -38,9 +39,16 @@ for charge_scaler in partial_charge_scalers:
     )
 
     input_molecules = [ec_mols, emc_mols, dec_mols, li_mols, pf6_mols]
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Total time to finish creating InputMoleculeSpec: {elapsed_time}")
 
+    start_time = time.time()
     openmm_set_gen.get_input_set(
         input_mol_dicts=input_molecules,
         density=1.154,
     )
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Total time to finish calling OpenMM.get_input_set(): {elapsed_time}")
 

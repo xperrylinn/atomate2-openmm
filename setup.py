@@ -7,5 +7,6 @@ setup(
     version="0.0.2",
     extras_require={
         "scripts": ["pymongo", "erdantic"],
+        "tutorials": ["ipywidgets", "nglview"]
     }
 )
