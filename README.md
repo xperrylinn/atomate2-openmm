@@ -100,9 +100,38 @@ partial charge scaling of ion in a hypothetical battery electrolyte formulation.
 
 # Contributing
 
+General guidelines for contributing:
 - Create a fork and open PR or file a GitHub issue
 - Numpy style documentation
 - Formatting with black
+
+## Development Environment Setup
+
+### Python Environment Setup
+
+A Python3.8 environment setup using conda according to the steps below:
+
+1. `conda env create -f environment.yaml`
+2. `conda activate atomate2-openmm`
+3. `pip install -e .` from repository root
+
+### Environment variables:
+
+When using maggma's MongoURIStore with MongoDB Atlas the following environment variables are required:
+- ATLAS_USERNAME: \<username for MongoDB Atlas\>
+- ATLAS_PASSWORD: \<database password. See database access page\>
+
+## Configuration Files
+
+When using maggma's S3Store with AWS S3 service make sure you have an `~/.aws/credentials` INI file present 
+with the following section and key values pairs:
+
+```
+[atomate2-openmm-dev]
+aws_access_key_id=<your AWS access key>
+aws_secret_access_key=<your AWS secret key>
+
+```
 
 ## Running Tests
 
