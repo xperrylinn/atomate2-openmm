@@ -35,6 +35,20 @@ There's currently only two workflow available, but see the extensibility section
 - production flow: nvt ensemble run following a geometry optimization, npt run to equilibrate pressure, and one annealing cycle
 - anneal flow: runs an nvt ensemble with heating, holding constant temperature, and cooling
 
+# Installation
+
+To install Atomate2-OpenMM run the following steps you must use an Anaconda based Python environment with Python>=3.8.
+1. Make your conda environemt is activatye, for example, `conda activate myenv`
+2. Update your existing environment with the dependencies specified in the `environment.yaml` file by running
+the following command and replacing `myenv` with the name of your conda environment:
+```bash
+conda env update --name myenv --file local.yml --prune
+```
+3. Install the `atomate2-openmm` package by running `pip install .` from the repository root. 
+
+Note: if you have issues with conda solving the environment, we recommend using mamba which provides a significantly 
+faster environment solver Anaconda and miniconda.
+
 # Manifest
 This section provides summary of assets throughout the repository.
 
