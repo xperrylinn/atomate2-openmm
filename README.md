@@ -46,6 +46,9 @@ conda env update --name myenv --file local.yml --prune
 ```
 3. Install the `atomate2-openmm` package by running `pip install .` from the repository root. 
 
+Note: if you have issues with conda solving the environment, we recommend using mamba which provides a significantly 
+faster environment solver Anaconda and miniconda.
+
 # Manifest
 This section provides summary of assets throughout the repository.
 
