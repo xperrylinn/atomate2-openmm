@@ -42,7 +42,7 @@ To install Atomate2-OpenMM run the following steps you must use an Anaconda base
 2. Update your existing environment with the dependencies specified in the `environment.yaml` file by running
 the following command and replacing `myenv` with the name of your conda environment:
 ```bash
-conda env update --name myenv --file local.yml --prune
+conda env update --name myenv --file environment.yaml --prune
 ```
 3. Install the `atomate2-openmm` package by running `pip install .` from the repository root. 
 
